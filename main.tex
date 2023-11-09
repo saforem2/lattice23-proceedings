@@ -118,18 +118,19 @@ This proposal state is accepted according to the Metropolis-Hastings criteria~\c
 A(x'|x) = \mathrm{min}\left\{{1, \frac{p(x')}{p(x)} \left| \frac{\partial x'}{\partial x} \right|}\right\}.
 \end{equation}
 %
-Unfortunately, HMC is known to suffer from long auto-correlations and often struggles with multi-modal target densities.
-%
 \section{\label{sec:method}Method}
 %
-\begin{wrapfigure}[20]{O}{0.50\textwidth}
+\begin{wrapfigure}[22]{r}{0.5\textwidth}
   \begin{center}
+  %\vspace{-25pt}
     \includegraphics[width=\linewidth]{assets/leapfrog-layer-alt-2}
   \end{center}
-  \caption{\label{fig:lf-layer}Illustration of the generalized MD update.}
+  \caption{\label{fig:lf-layer}Illustration of the generalized MD update $\texttt{leapfrog layer}: (x, v) \rightarrow (x'', v'')$.}
 \end{wrapfigure}
 %
-Building on the approach from~\cite{L2HMC,FTHMC,etc}, we introduce two (invertible) neural networks (\texttt{xNet}, \texttt{vNet}):
+Unfortunately, HMC is known to suffer from long auto-correlations and often struggles with multi-modal target densities.
+%
+Instead, we propose building on the approach from~\cite{L2HMC,FTHMC,etc}. We introduce two (invertible) neural networks (\texttt{xNet}, \texttt{vNet}):
 %
 \begin{align}
 \texttt{vNet}&: (x, F) \rightarrow (s_{v}, t_{v}, q_{v}) \\
@@ -141,10 +142,13 @@ where $s, t, q$ are all of the same dimensionality as $x$ and $v$, and are param
 These network outputs $(s, t, q)$ are then used in a generalized MD update (as shown in Fig~\ref{fig:lf-layer}) via:
 %
 \begin{align}
-\Gamma_{\theta}: (x, v) \rightarrow (x, v') \\
-\Lambda_{\theta}: (x, v) \rightarrow (x', v).
+\Gamma^{\pm}_{\theta}&: (x, v) \rightarrow (x, v') \\
+\Lambda^{\pm}_{\theta}&: (x, v) \rightarrow (x', v).
 \end{align}
 %
+where the superscript $\pm$ on $\Gamma^{\pm}_{\theta}, \Lambda^{\pm}_{\theta}$ correspond to the direction $d \sim \mathcal{U}(-1, +1)$ of the update\footnote{This can be \textit{absorbed} by constructing trajectories of $n$ forward $(+)$ steps followed by $n$ backward $(-)$ steps. See Appendix XXX for details.}.
+%
+
 To ensure that our proposed update remains reversible, we split the $x$ update into two sub-updates on complementary subsets ($x = x_{A} \cup x_{B}$):
 %
 \begin{align}
@@ -161,7 +165,7 @@ v'' &= \Gamma_{\theta}(x'', v')
     \item \texttt{input:} $x$
     \begin{itemize}
         \item Re-sample $v \sim \mathcal{N}(0, 1)$
-        \item Construct initial state $\xi = (x, v)$
+        \item Construct initial state $\xi \coloneqq (x, v)$
     \end{itemize}
     \item \texttt{forward:} Generate proposal $\xi'$ by passing initial $\xi$ through $N_{\mathrm{LF}}$ leapfrog layers:
     \begin{equation}
@@ -221,13 +225,13 @@ where $U_{\mu\nu}(x) = U_{\mu}(x) U_{\nu}(x + \hat{\mu}) U_{\mu}^{\dagger}(x + \
 
 As before, we introduce momenta $P_{\mu}(x) = P^{k}_{\mu}(x) \lambda^{k}$ conjugate to the real fields $\omega_{\mu}^{k}(x)$.
 %
-Similarly, we can write the Hamiltonian as
+We can write the Hamiltonian as
 %
 \begin{equation}
     H[P, U] = \frac{1}{2} P^{2} + S_{G}[U]
 \end{equation}
 %
-and consequently
+by Hamilton's equations
 %
 \begin{equation}
 \frac{d\omega^{k}}{dt} = \frac{\partial H}{\partial P^{k}},
@@ -259,7 +263,21 @@ and similarly for the momentum update,
 \end{align}
 %
 where $F[U]$ is the force term.
-
+%
+In this case, our $\texttt{vNet}: (U, F) = (e^{iQ}, F) \rightarrow (s_{P}, t_{P}, q_{P})$.
+%
+We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via
+\begin{enumerate}
+    \item \texttt{forward}, $(+)$:
+    \begin{equation}
+        \Gamma^{+}(U, F) = P \cdot e^{\frac{\varepsilon}{2} s_{P}} - \frac{\varepsilon}{2}\left[ F \cdot e^{\varepsilon q_{P}} + t_{P} \right]
+    \end{equation}
+    \item \texttt{backward}, $(-)$:
+    \begin{equation}
+        \Gamma^{-}(U, F) = e^{-\frac{\varepsilon}{2} s_{P}} \left\{P + \frac{\varepsilon}{2} \left[ F \cdot e^{\varepsilon q_{P}} + t_{P} \right] \right\}
+    \end{equation}
+\end{enumerate}
+%
 
 \begin{thebibliography}{99}
 \bibitem{...}
