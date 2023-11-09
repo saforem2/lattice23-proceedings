@@ -4,6 +4,9 @@
 \usepackage{pos}
 \usepackage{wrapfig}
 \usepackage{svg}
+\usepackage{lineno}
+
+\linenumbers
 
 \title{MLMC: Machine Learning Monte Carlo for Lattice Gauge Theory}
 %% \ShortTitle{Short Title for header}
@@ -117,17 +120,16 @@ A(x'|x) = \mathrm{min}\left\{{1, \frac{p(x')}{p(x)} \left| \frac{\partial x'}{\p
 %
 Unfortunately, HMC is known to suffer from long auto-correlations and often struggles with multi-modal target densities.
 %
-
 \section{\label{sec:method}Method}
 %
-\begin{wrapfigure}{r}{0.5\textwidth}
+\begin{wrapfigure}[20]{O}{0.50\textwidth}
   \begin{center}
-    \includesvg[width=0.48\textwidth]{lflayer}
+    \includegraphics[width=\linewidth]{assets/leapfrog-layer-alt-2}
   \end{center}
-  \caption{Birds}
+  \caption{\label{fig:lf-layer}Illustration of the generalized MD update.}
 \end{wrapfigure}
 %
-Building on the approach from~\cite{L2HMC,FTHMC,etc}, we introduce two neural networks (\texttt{xNet}, \texttt{vNet}):
+Building on the approach from~\cite{L2HMC,FTHMC,etc}, we introduce two (invertible) neural networks (\texttt{xNet}, \texttt{vNet}):
 %
 \begin{align}
 \texttt{vNet}&: (x, F) \rightarrow (s_{v}, t_{v}, q_{v}) \\
@@ -136,7 +138,7 @@ Building on the approach from~\cite{L2HMC,FTHMC,etc}, we introduce two neural ne
 %
 where $s, t, q$ are all of the same dimensionality as $x$ and $v$, and are parameterized by a set of weights $\theta$.
 %
-These network outputs $(s, t, q)$ are then used in a generalized MD update via
+These network outputs $(s, t, q)$ are then used in a generalized MD update (as shown in Fig~\ref{fig:lf-layer}) via:
 %
 \begin{align}
 \Gamma_{\theta}: (x, v) \rightarrow (x, v') \\
@@ -151,8 +153,112 @@ x' &= x_{B} + \Lambda_{\theta}(x_{A}, v') \\
 x'' &= x'_{A} + \Lambda_{\theta}(x'_{B}, v') \\
 v'' &= \Gamma_{\theta}(x'', v')
 \end{align}
-
+%
 %where $v_{0} \sim \mathcal{N}(0, 1)$ is re-sampled at the beginning of each trajectory and projected away at the end to obtain the proposal state $x'$.
+%
+\subsection{\label{subsec:algorithm}Algorithm}
+\begin{enumerate}
+    \item \texttt{input:} $x$
+    \begin{itemize}
+        \item Re-sample $v \sim \mathcal{N}(0, 1)$
+        \item Construct initial state $\xi = (x, v)$
+    \end{itemize}
+    \item \texttt{forward:} Generate proposal $\xi'$ by passing initial $\xi$ through $N_{\mathrm{LF}}$ leapfrog layers:
+    \begin{equation}
+        \xi \xrightarrow[]{\mathrm{LF\,\,\, Layer}} \xi_{1} \rightarrow \cdots \rightarrow \xi_{N_{\mathrm{LF}}} = \xi' \coloneqq (x'', v'')
+    \end{equation}
+    \begin{itemize}
+        \item Metropolis-Hastings accept / reject:
+        \begin{equation}
+            A(\xi'|\xi) = \mathrm{min}\left\{1, \frac{\pi(\xi')}{\pi(\xi)} \left|\mathcal{J}\left(\xi', \xi\right)\right|\right\},
+            \label{eq:MH}
+        \end{equation}
+        where $\left|\mathcal{J}(\xi',\xi)\right|$ is the determinant of the Jacobian.
+    \end{itemize}
+    \item \texttt{backward:} (if training)
+    \begin{itemize}
+        \item Evaluate the loss function $\mathcal{L}(\xi', \xi)$ and back propagate
+    \end{itemize}
+    \item \texttt{return:} $x_{i+1}$
+    \begin{itemize}
+        \item Evaluate MH criteria (Eq. ~\ref{eq:MH}) and return accepted config:
+        \begin{equation}
+            x_{i+1} \gets \begin{cases}
+                x'' \quad \text{w/ prob.}\quad A(\xi'|\xi)  \\
+                x \,\,\,\quad \text{w/ prob.} \quad 1 - A(\xi'|\xi)
+            \end{cases}
+        \end{equation}
+    \end{itemize}
+\end{enumerate}
+%
+\subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
+%
+\begin{wrapfigure}[23]{R}{0.4\textwidth}
+  \begin{center}
+    \includegraphics[width=0.4\textwidth]{assets/lattice}
+  \end{center}
+  \caption{Illustration of the lattice}
+  \label{fig:lattice}
+\end{wrapfigure}
+%
+Write link variables $U_{\mu}(x) \in SU(3)$:
+%
+\begin{align}
+U_{\mu}(x) &= \exp\left[i \omega_{\mu}^{k}(x) \lambda^{k} \right] \\
+&= e^{iQ}, \quad Q \in \mathfrak{su}(3)
+\end{align}
+%
+where $\omega_{\mu}^{k}(x) \in \mathbb{R}$ and $\lambda^{k}$ are the generators of $SU(3)$.
+%
+We consider the standard Wilson gauge action
+%
+\begin{equation}
+S_{G} = -\frac{\beta}{6}\sum \mathrm{Tr}\left[U_{\mu\nu}(x) + U^{\dagger}_{\mu\nu}(x) \right]
+\end{equation}
+%
+where $U_{\mu\nu}(x) = U_{\mu}(x) U_{\nu}(x + \hat{\mu}) U_{\mu}^{\dagger}(x + \hat{\nu}) U^{\dagger}_{\nu}(x)$.
+%
+
+As before, we introduce momenta $P_{\mu}(x) = P^{k}_{\mu}(x) \lambda^{k}$ conjugate to the real fields $\omega_{\mu}^{k}(x)$.
+%
+Similarly, we can write the Hamiltonian as
+%
+\begin{equation}
+    H[P, U] = \frac{1}{2} P^{2} + S_{G}[U]
+\end{equation}
+%
+and consequently
+%
+\begin{equation}
+\frac{d\omega^{k}}{dt} = \frac{\partial H}{\partial P^{k}},
+\quad \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}.
+\end{equation}
+%
+To update the gauge field $U$,
+%
+\begin{equation}
+    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} \Rightarrow \frac{dQ}{dt} = P
+\end{equation}
+%
+Discretizing with step size $\varepsilon$,
+%
+\begin{align}
+    Q(\varepsilon) &= Q(0) + \varepsilon P(0) \Rightarrow \\
+    -i \log U(\varepsilon) &= - i \log U(0) + \varepsilon P(0) \\
+    U(\varepsilon) &= e^{i \varepsilon P(0)} U(0) \Longrightarrow \\
+    \Lambda: U \rightarrow U' &\coloneqq e^{i\varepsilon P'} U.
+\end{align}
+%
+and similarly for the momentum update,
+%
+\begin{align}
+    \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}} &= - \frac{\partial H}{\partial Q} = - \frac{dS}{dQ} \Rightarrow \\
+    P(\varepsilon) &= P(0) - \varepsilon \left.\frac{dS}{dQ}\right|_{t=0} \\
+    &= P(0) - \varepsilon F[U] \\
+    \Gamma: P \rightarrow P' &\coloneqq P - \frac{\varepsilon}{2} F[U],
+\end{align}
+%
+where $F[U]$ is the force term.
 
 
 \begin{thebibliography}{99}
