@@ -5,6 +5,7 @@
 \usepackage{wrapfig}
 \usepackage{svg}
 \usepackage{lineno}
+\usepackage{subcaption}
 
 \linenumbers
 
@@ -266,7 +267,8 @@ where $F[U]$ is the force term.
 %
 In this case, our $\texttt{vNet}: (U, F) = (e^{iQ}, F) \rightarrow (s_{P}, t_{P}, q_{P})$.
 %
-We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via
+We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e. $\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U, F)\right] = (U, F)$}:
+%
 \begin{enumerate}
     \item \texttt{forward}, $(+)$:
     \begin{equation}
@@ -278,6 +280,24 @@ We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via
     \end{equation}
 \end{enumerate}
 %
+\begin{figure}[htpb]
+    \centering
+    \begin{subfigure}{0.31\textwidth}
+        \includesvg[width=\textwidth]{assets/logdet_ridgeplot1}
+        \caption{\label{subfig:logdet1} 100 train iters}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.31\textwidth}
+        \includesvg[width=\textwidth]{assets/logdet_ridgeplot2}
+        \caption{\label{subfig:logdet2} 500 train iters}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.31\textwidth}
+        \includesvg[width=\textwidth]{assets/logdet_ridgeplot3}
+        \caption{\label{subfig:logdet3} 1000 train iters}
+    \end{subfigure}
+    \caption{\label{fig:logdet}Evolution of $\left|\mathcal{J}\right|$ vs $N_{\mathrm{LF}}$(\texttt{logdet}) during the first 1000 training iterations.}
+\end{figure}
 
 \begin{thebibliography}{99}
 \bibitem{...}
