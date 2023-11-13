@@ -268,6 +268,15 @@ by Hamilton's equations
 \quad \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}.
 \end{equation}
 %
+
+\begin{wrapfigure}[16]{r}{0.5\textwidth}
+  \begin{center}
+  %\vspace{-25pt}
+  \includesvg[width=0.5\textwidth]{assets/critical_slowing_down}
+  \end{center}
+    \caption{\label{fig:csd}Illustration of topological freezing at increasing resolution.}
+\end{wrapfigure}
+%
 To update the gauge field $U$,
 %
 \begin{equation}
@@ -294,6 +303,7 @@ and similarly for the momentum update,
 %
 where $F[U]$ is the force term.
 %
+
 In this case, our $\texttt{vNet}: (U, F) = (e^{iQ}, F) \rightarrow (s_{P}, t_{P}, q_{P})$.
 %
 We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e. $\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U, F)\right] = (U, F)$}:
@@ -309,7 +319,7 @@ We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via\footnote{Note
     \end{equation}
 \end{enumerate}
 %
-\begin{figure}[htpb]
+\begin{figure}[htpb!]
     \centering
     \begin{subfigure}{0.31\textwidth}
         \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
