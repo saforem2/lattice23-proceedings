@@ -97,7 +97,7 @@ Specifically, we want to (sequentially) construct a chain of states:
 \begin{wrapfigure}[22]{l}{0.33\textwidth}
   \begin{center}
   %\vspace{-25pt}
-  \includegraphics[width=0.33\textwidth]{assets/hmc-update7.pdf}
+  \includegraphics[width=0.33\textwidth]{assets/hmc-update6.pdf}
   \end{center}
     \caption{\label{fig:hmc-update}Illustration of the leapfrog update for HMC.}
 \end{wrapfigure}
@@ -227,7 +227,7 @@ v'' &= \Gamma_{\theta}(x'', v')
 %
 \subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
 %
-\begin{wrapfigure}[15]{r}{0.4\textwidth}
+\begin{wrapfigure}[16]{r}{0.4\textwidth}
   \begin{center}
     \includegraphics[width=0.4\textwidth]{assets/lattice}
   \end{center}
@@ -239,7 +239,7 @@ Write link variables $U_{\mu}(x) \in SU(3)$:
 %
 \begin{align}
 U_{\mu}(x) &= \exp\left[i \omega_{\mu}^{k}(x) \lambda^{k} \right] \\
-&= e^{iQ}, \quad Q \in \mathfrak{su}(3)
+&= e^{iW}, \quad W \in \mathfrak{su}(3)
 \end{align}
 %
 where $\omega_{\mu}^{k}(x) \in \mathbb{R}$ and $\lambda^{k}$ are the generators of $SU(3)$.
@@ -252,7 +252,19 @@ S_{G} = -\frac{\beta}{6}\sum \mathrm{Tr}\left[U_{\mu\nu}(x) + U^{\dagger}_{\mu\n
 %
 where $U_{\mu\nu}(x) = U_{\mu}(x) U_{\nu}(x + \hat{\mu}) U_{\mu}^{\dagger}(x + \hat{\nu}) U^{\dagger}_{\nu}(x)$.
 %
-
+In particular, we are interested in measuring the (scalar) topological charge $Q$ on the lattice.
+%
+Since (different) lattice configurations with the same value of $Q$ are related by a gauge transformation, they do not meaningfully contribute to our statistics.
+%
+Because of this, we are particularly interested in generating configurations from different \textit{topological sectors}\footnote{Characterized by different values of $Q$} to reduce uncertainty in our statistical estimates.
+%
+By repeating this procedure at increasing spatial resolution ($\beta \propto 1 / a$\footnote{Where $a$ is the lattice spacing}), we are able to extrapolate our estimates to the continuum limit where they can be compared with experimental measurements.
+%
+Current approaches (HMC, ...) are known to suffer from auto-correlation times which scale exponentially in this limit, singificantly limiting their usefulness in this regime.
+%
+This phenomenon can be seen in Fig~\fig{fig:csd}, where fluctuations in the topological charge $\delta Q = |Q^{i + \ell} - Q^{i}|$ decrease as $\beta = 2 \rightarrow 3 \rightarrow \cdots$, and disappear completely by $\beta = 7$.
+%
+%%Here we are interested in generating an ensemble of configurations on which we will calculate physical quantities of interest . As we calculate these quantities over increasingly many lattice configurations, we are able 
 As before, we introduce momenta $P_{\mu}(x) = P^{k}_{\mu}(x) \lambda^{k}$ conjugate to the real fields $\omega_{\mu}^{k}(x)$.
 %
 We can write the Hamiltonian as
@@ -280,13 +292,13 @@ by Hamilton's equations
 To update the gauge field $U$,
 %
 \begin{equation}
-    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} \Rightarrow \frac{dQ}{dt} = P
+    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} \Rightarrow \frac{dW}{dt} = P
 \end{equation}
 %
 Discretizing with step size $\varepsilon$,
 %
 \begin{align}
-    Q(\varepsilon) &= Q(0) + \varepsilon P(0) \Rightarrow \\
+    W(\varepsilon) &= W(0) + \varepsilon P(0) \Rightarrow \\
     -i \log U(\varepsilon) &= - i \log U(0) + \varepsilon P(0) \\
     U(\varepsilon) &= e^{i \varepsilon P(0)} U(0) \Longrightarrow \\
     \Lambda: U \rightarrow U' &\coloneqq e^{i\varepsilon P'} U.
@@ -295,8 +307,8 @@ Discretizing with step size $\varepsilon$,
 and similarly for the momentum update,
 %
 \begin{align}
-    \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}} &= - \frac{\partial H}{\partial Q} = - \frac{dS}{dQ} \Rightarrow \\
-    P(\varepsilon) &= P(0) - \varepsilon \left.\frac{dS}{dQ}\right|_{t=0} \\
+    \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}} &= - \frac{\partial H}{\partial W} = - \frac{dS}{dW} \Rightarrow \\
+    P(\varepsilon) &= P(0) - \varepsilon \left.\frac{dS}{dW}\right|_{t=0} \\
     &= P(0) - \varepsilon F[U] \\
     \Gamma: P \rightarrow P' &\coloneqq P - \frac{\varepsilon}{2} F[U],
 \end{align}
@@ -304,7 +316,7 @@ and similarly for the momentum update,
 where $F[U]$ is the force term.
 %
 
-In this case, our $\texttt{vNet}: (U, F) = (e^{iQ}, F) \rightarrow (s_{P}, t_{P}, q_{P})$.
+In this case, our $\texttt{vNet}: (U, F) = (e^{iW}, F) \rightarrow (s_{P}, t_{P}, q_{P})$.
 %
 We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e. $\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U, F)\right] = (U, F)$}:
 %
