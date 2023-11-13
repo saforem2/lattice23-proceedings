@@ -1,9 +1,22 @@
+% !TeX TXS-program:compile = txs:///pdflatex/[--shell-escape]
 % Please make sure you insert your
 % data according to the instructions in PoSauthmanual.pdf
 \documentclass[a4paper,11pt]{article}
 \usepackage{pos}
+\usepackage[document]{ragged2e}
 \usepackage{wrapfig}
+% \usepackage{svglatex}
+
+% \usepackage{ifluatex}
+% \ifluatex
+%   \usepackage{pdftexcmds}
+%   \makeatletter
+%   \let\pdfstrcmp\pdf@strcmp
+%   \let\pdffilemoddate\pdf@filemoddate
+%   \makeatother
+% \fi
 \usepackage{svg}
+% \usepackage[write18]{svg}
 \usepackage{lineno}
 \usepackage{subcaption}
 
@@ -51,7 +64,7 @@ Fermi National Accelerator Laboratory\\}
 We would like to calculate observables $\mathcal{O}$:
 %
 \begin{equation}
-\left\langle \mathcal{O}\right\rangle \propto \int \left[\mathcal{D} x\right]\, \mathcal{O}(x)\, p(x)
+\left\langle \mathcal{O}\right\rangle \propto \int \left[\mathcal{D} x\right]\, \mathcal{O}(x)\, \pi(x)
 \end{equation}
 %
 If these were independent, we could approximate the integral as $\left\langle\mathcal{O}\right\rangle \simeq \frac{1}{N}\sum_{n=1}^{N} \mathcal{O}(x_{n})$ with variance
@@ -69,9 +82,25 @@ Instead, nearby configurations are correlated, causing us to incur a factor of $
 
 \subsection{\label{subsec:hmc}Hamiltonian Monte Carlo (HMC)}
 %
-We can use the Hamiltonian Monte Carlo (HMC) algorithm to help reduce these auto-correlations.
+The typical approach~\cite{HMC} is to use Hamiltonian Monte Carlo (HMC)
+algorithm for generating configurations distributed according to our
+target distribution 
+distributed according to our target
+distribution.
+%
+This typically 
+to help
+reduce these auto-correlations.
 %
 Specifically, we want to (sequentially) construct a chain of states:
+%
+\begin{wrapfigure}[22]{l}{0.33\textwidth}
+  \begin{center}
+  %\vspace{-25pt}
+      \includegraphics[width=\linewidth]{assets/hmc-update7}
+  \end{center}
+    \caption{\label{fig:hmc-update}Illustration of the leapfrog update for HMC.}
+\end{wrapfigure}
 %
 \begin{equation}
 x_{0} \rightarrow x_{1} \rightarrow x_{i} \rightarrow \cdots \rightarrow x_{N}
@@ -80,15 +109,15 @@ x_{0} \rightarrow x_{1} \rightarrow x_{i} \rightarrow \cdots \rightarrow x_{N}
 such that, as $N \rightarrow \infty$:
 %
 \begin{equation}
-\left\{x_{i}, x_{i+1}, x_{i+2}, \ldots, x_{N}\right\} \xrightarrow[]{N\rightarrow\infty} p(x)
+\left\{x_{i}, x_{i+1}, x_{i+2}, \ldots, x_{N}\right\} \xrightarrow[]{N\rightarrow\infty} \pi(x)
 \end{equation}
 %
 To do this, we begin by introducing a fictitious momentum\footnote{Here $\sim$ means \textit{is distributed according to}.} $v \sim \mathcal{N}(0, 1)$ normally distributed, independent of $x$.
 %
-We can write the joint distribution $p(x, v)$ as
+We can write the joint distribution $\pi(x, v)$ as
 %
 \begin{align}
-p(x, v) &= p(x) p(v) \propto e^{-S(x)} e^{-\frac{1}{2} v^{T}v} \\
+\pi(x, v) &= \pi(x) \pi(v) \propto e^{-S(x)} e^{-\frac{1}{2} v^{T}v} \\
 &= e^{-\left[S(x) + \frac{1}{2} v^{T} v \right]} \\
 &= e^{-H(x, v)}
 \end{align}
@@ -116,7 +145,7 @@ and propose $x'$ as the next state in our chain.
 This proposal state is accepted according to the Metropolis-Hastings criteria~\cite{mh}.
 %
 \begin{equation}
-A(x'|x) = \mathrm{min}\left\{{1, \frac{p(x')}{p(x)} \left| \frac{\partial x'}{\partial x} \right|}\right\}.
+A(x'|x) = \mathrm{min}\left\{{1, \frac{\pi(x')}{\pi(x)} \left| \frac{\partial x'}{\partial x} \right|}\right\}.
 \end{equation}
 %
 \section{\label{sec:method}Method}
@@ -126,7 +155,7 @@ A(x'|x) = \mathrm{min}\left\{{1, \frac{p(x')}{p(x)} \left| \frac{\partial x'}{\p
   %\vspace{-25pt}
     \includegraphics[width=\linewidth]{assets/leapfrog-layer-alt-2}
   \end{center}
-  \caption{\label{fig:lf-layer}Illustration of the generalized MD update $\texttt{leapfrog layer}: (x, v) \rightarrow (x'', v'')$.}
+    \caption{\label{fig:lf-layer}Illustration of the generalized MD update $\texttt{leapfrog layer}: (x, v) \rightarrow (x'', v'')$.}
 \end{wrapfigure}
 %
 Unfortunately, HMC is known to suffer from long auto-correlations and often struggles with multi-modal target densities.
@@ -283,17 +312,17 @@ We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via\footnote{Note
 \begin{figure}[htpb]
     \centering
     \begin{subfigure}{0.31\textwidth}
-        \includesvg[width=\textwidth]{assets/logdet_ridgeplot1}
+        \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
         \caption{\label{subfig:logdet1} 100 train iters}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.31\textwidth}
-        \includesvg[width=\textwidth]{assets/logdet_ridgeplot2}
+        \includesvg[width=\textwidth]{assets/logdet_ridgeplot2.svg}
         \caption{\label{subfig:logdet2} 500 train iters}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.31\textwidth}
-        \includesvg[width=\textwidth]{assets/logdet_ridgeplot3}
+        \includesvg[width=\textwidth]{assets/logdet_ridgeplot3.svg}
         \caption{\label{subfig:logdet3} 1000 train iters}
     \end{subfigure}
     \caption{\label{fig:logdet}Evolution of $\left|\mathcal{J}\right|$ vs $N_{\mathrm{LF}}$(\texttt{logdet}) during the first 1000 training iterations.}
