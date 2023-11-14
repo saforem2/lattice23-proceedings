@@ -5,6 +5,10 @@
 \usepackage{pos}
 \usepackage[document]{ragged2e}
 \usepackage{wrapfig}
+%\renewcommand*\familydefault{\ttfamily} %% Only if the base font of the document is to be typewriter style
+%{\ttfamily ...}
+\usepackage[T1]{fontenc}
+
 % \usepackage{svglatex}
 
 % \usepackage{ifluatex}
@@ -171,12 +175,13 @@ where $s, t, q$ are all of the same dimensionality as $x$ and $v$, and are param
 %
 These network outputs $(s, t, q)$ are then used in a generalized MD update (as shown in Fig~\ref{fig:lf-layer}) via:
 %
+
 \begin{align}
 \Gamma^{\pm}_{\theta}&: (x, v) \rightarrow (x, v') \\
 \Lambda^{\pm}_{\theta}&: (x, v) \rightarrow (x', v).
 \end{align}
 %
-where the superscript $\pm$ on $\Gamma^{\pm}_{\theta}, \Lambda^{\pm}_{\theta}$ correspond to the direction $d \sim \mathcal{U}(-1, +1)$ of the update\footnote{This can be \textit{absorbed} by constructing trajectories of $n$ forward $(+)$ steps followed by $n$ backward $(-)$ steps. See Appendix XXX for details.}.
+where the superscript $\pm$ on $\Gamma^{\pm}_{\theta}, \Lambda^{\pm}_{\theta}$ correspond to the direction $d \sim \mathcal{U}(-1, +1)$ of the update\footnote{We can simplify this and \textit{absorb} the directional (forward / backward) random variable by explicitly constructing trajectories consisting of $n$ \textit{forward} $(+)$ steps followed by $n$ \emph{backward} $(-)$ steps. See \textcolor{red}{Appendix XXX for details.}}.
 %
 
 To ensure that our proposed update remains reversible, we split the $x$ update into two sub-updates on complementary subsets ($x = x_{A} \cup x_{B}$):
@@ -227,11 +232,11 @@ v'' &= \Gamma_{\theta}(x'', v')
 %
 \subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
 %
-\begin{wrapfigure}[16]{r}{0.4\textwidth}
+\begin{wrapfigure}[18]{r}{0.4\textwidth}
   \begin{center}
+    \caption{Illustration of the lattice}
     \includegraphics[width=0.4\textwidth]{assets/lattice}
   \end{center}
-  \caption{Illustration of the lattice}
   \label{fig:lattice}
 \end{wrapfigure}
 %
@@ -250,22 +255,40 @@ We consider the standard Wilson gauge action
 S_{G} = -\frac{\beta}{6}\sum \mathrm{Tr}\left[U_{\mu\nu}(x) + U^{\dagger}_{\mu\nu}(x) \right]
 \end{equation}
 %
-where $U_{\mu\nu}(x) = U_{\mu}(x) U_{\nu}(x + \hat{\mu}) U_{\mu}^{\dagger}(x + \hat{\nu}) U^{\dagger}_{\nu}(x)$.
+where 
+\begin{equation*}
+    U_{\mu\nu}(x) = U_{\mu}(x) U_{\nu}(x + \hat{\mu}) U_{\mu}^{\dagger}(x + \hat{\nu}) U^{\dagger}_{\nu}(x).
+\end{equation*}
+
+%
+
+\begin{wrapfigure}[22]{L}{0.40\textwidth}
+  \begin{center}
+  \caption{\label{fig:csd}$\delta Q \rightarrow 0$ with increasing $\beta$.}
+  %\vspace{-25pt}
+  \includesvg[width=0.40\textwidth]{assets/critical_slowing_down}
+  \end{center}
+\end{wrapfigure}
 %
 In particular, we are interested in measuring the (scalar) topological charge $Q$ on the lattice.
 %
-Since (different) lattice configurations with the same value of $Q$ are related by a gauge transformation, they do not meaningfully contribute to our statistics.
+Since different lattice configurations with the same value of $Q$ are related by a gauge transformation, they do not meaningfully contribute to our statistics.
 %
-Because of this, we are particularly interested in generating configurations from different \textit{topological sectors}\footnote{Characterized by different values of $Q$} to reduce uncertainty in our statistical estimates.
+Because of this, we would like to gneconfigurations from different \textit{topological sectors}\footnote{Characterized by different values of $Q$} to reduce uncertainty in our statistical estimates.
 %
-By repeating this procedure at increasing spatial resolution ($\beta \propto 1 / a$\footnote{Where $a$ is the lattice spacing}), we are able to extrapolate our estimates to the continuum limit where they can be compared with experimental measurements.
+By repeating this procedure at increasing spatial resolution ($\beta \propto 1 / a$\footnote{Here $a$ is the lattice spacing}), we are able to extrapolate our estimates to the continuum limit where they can be compared with experimental measurements.
 %
-Current approaches (HMC, ...) are known to suffer from auto-correlation times which scale exponentially in this limit, singificantly limiting their usefulness in this regime.
+
+Current approaches (HMC, ...) are known to suffer from auto-correlation times which scale exponentially in this limit, significantly limiting their effectiveness.
 %
-This phenomenon can be seen in Fig~\fig{fig:csd}, where fluctuations in the topological charge $\delta Q = |Q^{i + \ell} - Q^{i}|$ decrease as $\beta = 2 \rightarrow 3 \rightarrow \cdots$, and disappear completely by $\beta = 7$.
+This phenomenon can be seen in Fig~\ref{fig:csd}, where fluctuations in the topological charge $\delta Q = |Q^{i + 1} - Q^{i}|$ decreases as $\beta = 2 \rightarrow 3 \rightarrow \cdots$, and disappear completely ($Q = \mathrm{const.}$) by $\beta = 7$.
 %
 %%Here we are interested in generating an ensemble of configurations on which we will calculate physical quantities of interest . As we calculate these quantities over increasingly many lattice configurations, we are able 
+%
+
+\subsection{\label{subsec:hmc-4dSU3}MD Updates}
 As before, we introduce momenta $P_{\mu}(x) = P^{k}_{\mu}(x) \lambda^{k}$ conjugate to the real fields $\omega_{\mu}^{k}(x)$.
+
 %
 We can write the Hamiltonian as
 %
@@ -281,41 +304,50 @@ by Hamilton's equations
 \end{equation}
 %
 
-\begin{wrapfigure}[16]{r}{0.5\textwidth}
-  \begin{center}
-  %\vspace{-25pt}
-  \includesvg[width=0.5\textwidth]{assets/critical_slowing_down}
-  \end{center}
-    \caption{\label{fig:csd}Illustration of topological freezing at increasing resolution.}
-\end{wrapfigure}
-%
-To update the gauge field $U$,
+To update the gauge field $U_{\mu} = e^{i\omega_{\mu}^{k} \lambda^{k}}$,
 %
 \begin{equation}
-    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} \Rightarrow \frac{dW}{dt} = P
+    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} \Longrightarrow \frac{dW}{dt} = P
 \end{equation}
 %
 Discretizing with step size $\varepsilon$,
 %
 \begin{align}
-    W(\varepsilon) &= W(0) + \varepsilon P(0) \Rightarrow \\
+    W(\varepsilon) &= W(0) + \varepsilon P(0) \Longrightarrow \\
     -i \log U(\varepsilon) &= - i \log U(0) + \varepsilon P(0) \\
     U(\varepsilon) &= e^{i \varepsilon P(0)} U(0) \Longrightarrow \\
-    \Lambda: U \rightarrow U' &\coloneqq e^{i\varepsilon P'} U.
+    \Lambda: U \rightarrow U' &= e^{i \varepsilon P} U
 \end{align}
 %
-and similarly for the momentum update,
+
+Similarly for the momentum update,
 %
 \begin{align}
-    \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}} &= - \frac{\partial H}{\partial W} = - \frac{dS}{dW} \Rightarrow \\
-    P(\varepsilon) &= P(0) - \varepsilon \left.\frac{dS}{dW}\right|_{t=0} \\
-    &= P(0) - \varepsilon F[U] \\
-    \Gamma: P \rightarrow P' &\coloneqq P - \frac{\varepsilon}{2} F[U],
+    \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}} &= - \frac{\partial H}{\partial W} = - \frac{dS}{dW} \Longrightarrow \\
+    P(\varepsilon) &= P(0) - \varepsilon \left.\frac{dS}{dW}\right|_{t=0} = P(0) - \varepsilon F[U]\\
+    \Gamma: P \rightarrow P' &= P - \frac{\varepsilon}{2} F[U]
 \end{align}
 %
 where $F[U]$ is the force term.
 %
+In terms of the operators
+%
+\begin{align}
+    \Gamma^{\pm}_{\theta}&: (U, P) \xrightarrow[]{\left(s_{P}, t_{P}, q_{P}\right)} (U, P') \\
+    \Lambda^{\pm}_{\theta}&: (U, P)\xrightarrow[]{\left(s_{U}, t_{U}, q_{U}\right)} (U', P) 
+\end{align}
+%
+and we can write the complete update:
+%
+\begin{align}
+    P' &= \Gamma^{\pm}_{\theta}(U, P) \\
+    U' &= U_{B} + \Lambda^{\pm}_{\theta}(U_{A}, P') \\ 
+    U'' &= U'_{A} + \Lambda^{\pm}_{\theta}(U'_{B}, P')\\
+    P'' &= \Gamma^{\pm}_{\theta}(U'', P')
+\end{align}
+%
 
+\subsection{\label{sec:momentum-update}Momentum Update}
 In this case, our $\texttt{vNet}: (U, F) = (e^{iW}, F) \rightarrow (s_{P}, t_{P}, q_{P})$.
 %
 We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e. $\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U, F)\right] = (U, F)$}:
@@ -330,6 +362,9 @@ We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via\footnote{Note
         \Gamma^{-}(U, F) = e^{-\frac{\varepsilon}{2} s_{P}} \left\{P + \frac{\varepsilon}{2} \left[ F \cdot e^{\varepsilon q_{P}} + t_{P} \right] \right\}
     \end{equation}
 \end{enumerate}
+%
+
+\section{\label{sec:results}Results}
 %
 \begin{figure}[htpb!]
     \centering
@@ -347,8 +382,18 @@ We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via\footnote{Note
         \includesvg[width=\textwidth]{assets/logdet_ridgeplot3.svg}
         \caption{\label{subfig:logdet3} 1000 train iters}
     \end{subfigure}
-    \caption{\label{fig:logdet}Evolution of $\left|\mathcal{J}\right|$ vs $N_{\mathrm{LF}}$(\texttt{logdet}) during the first 1000 training iterations.}
+    \caption{\label{fig:logdet}Evolution of $\left|\mathcal{J}\right|$ vs $N_{\mathrm{LF}}$ (\texttt{logdet}) during the first 1000 training iterations.}
 \end{figure}
+%
+%As a check on our model, we compare the average plaquette between the Fig~\fig{fig:pdiff} we can see that 
+%\begin{figure}[htpb!]
+%  \includesvg[width=\textwidth]{assets/pdiff-robust.svg}
+%  \caption{\label{subfig:pdiff}Absolute difference in the average plaquette $\left|\delta U_{\mu\nu}\right|^{2}$ between HMC and the trained model.}
+%\end{figure}
+
+
+\section{\label{sec:conclusion}Conclusion}
+\color{red}{TODO}
 
 %\begin{thebibliography}{99}
 %\bibitem{...}
