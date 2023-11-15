@@ -1,4 +1,4 @@
-% !TeX TXS-program:compile = txs:///pdflatex/[--shell-escape]
+%   {!TeX TXS-program:compile = txs:///pdflatex/[--shell-escape]
 % Please make sure you insert your
 % data according to the instructions in PoSauthmanual.pdf
 \documentclass[a4paper,11pt]{article}
@@ -71,13 +71,19 @@ We would like to calculate observables $\mathcal{O}$:
 \left\langle \mathcal{O}\right\rangle \propto \int \left[\mathcal{D} x\right]\, \mathcal{O}(x)\, \pi(x)
 \end{equation}
 %
-If these were independent, we could approximate the integral as $\left\langle\mathcal{O}\right\rangle \simeq \frac{1}{N}\sum_{n=1}^{N} \mathcal{O}(x_{n})$ with variance
+where $\pi(x) \propto e^{-\beta S(x$)}$ is our target distribution.
+
+%
+If these were independent, we could approximate the integral as
+$\left\langle\mathcal{O}\right\rangle \simeq \frac{1}{N}\sum_{n=1}^{N}
+\mathcal{O}(x_{n})$ with variance
 %
 \begin{equation}
 \sigma_{\mathcal{O}}^{2} = \frac{1}{N}\,\mathrm{Var}\left[\mathcal{O}(x)\right] \Longrightarrow \sigma_{\mathcal{O}} \propto \frac{1}{\sqrt{N}}.
 \end{equation}
 %
-Instead, nearby configurations are correlated, causing us to incur a factor of $\tau_{\mathrm{int}}^{\mathcal{O}}$ in the variance expression
+Instead, nearby configurations are correlated, causing us to incur a factor of
+$\tau_{\mathrm{int}}^{\mathcal{O}}$ in the variance expression
 %
 \begin{equation}
 \sigma_{\mathcal{O}}^{2} = \frac{\tau_{\mathrm{int}}^{\mathcal{O}}}{N} \mathrm{Var}\left[\mathcal{O}(x)\right]
@@ -88,13 +94,11 @@ Instead, nearby configurations are correlated, causing us to incur a factor of $
 %
 The typical approach~\cite{HMC} is to use Hamiltonian Monte Carlo (HMC)
 algorithm for generating configurations distributed according to our
-target distribution 
-distributed according to our target
-distribution.
+target distribution $\pi(x)$.
 %
-This typically 
-to help
-reduce these auto-correlations.
+% This typically 
+% to help
+% reduce these auto-correlations.
 %
 Specifically, we want to (sequentially) construct a chain of states:
 %
@@ -107,16 +111,18 @@ Specifically, we want to (sequentially) construct a chain of states:
 \end{wrapfigure}
 %
 \begin{equation}
-x_{0} \rightarrow x_{1} \rightarrow x_{i} \rightarrow \cdots \rightarrow x_{N}
+x_{0} \rightarrow x_{1} \rightarrow x_{i} \rightarrow \cdots \rightarrow x_{n}
 \end{equation}
 %
-such that, as $N \rightarrow \infty$:
+such that, as $n \rightarrow \infty$:
 %
 \begin{equation}
-\left\{x_{i}, x_{i+1}, x_{i+2}, \ldots, x_{N}\right\} \xrightarrow[]{N\rightarrow\infty} \pi(x)
+\left\{x_{i}, x_{i+1}, x_{i+2}, \ldots, x_{n}\right\} \xrightarrow[]{n\rightarrow\infty} \pi(x)
 \end{equation}
 %
-To do this, we begin by introducing a fictitious momentum\footnote{Here $\sim$ means \textit{is distributed according to}.} $v \sim \mathcal{N}(0, 1)$ normally distributed, independent of $x$.
+To do this, we begin by introducing a fictitious momentum\footnote{Here $\sim$
+means \textit{is distributed according to}.} $v \sim \mathcal{N}(0, 1)$
+normally distributed, independent of $x$.
 %
 We can write the joint distribution $\pi(x, v)$ as
 %
@@ -126,7 +132,9 @@ We can write the joint distribution $\pi(x, v)$ as
 &= e^{-H(x, v)}
 \end{align}
 %
-We can evolve the Hamiltonian dynamics of the $(\dot{x}, \dot{v}) = (\partial_{v} H, -\partial_{x} H)$ system using operators $\Gamma: v \rightarrow v'$ and $\Lambda: x \rightarrow x'$.
+We can evolve the Hamiltonian dynamics of the $(\dot{x}, \dot{v}) =
+(\partial_{v} H, -\partial_{x} H)$ system using operators $\Gamma: v
+\rightarrow v'$ and $\Lambda: x \rightarrow x'$.
 %
 Explicitly, for a single update step of the leapfrog integrator:
 %
@@ -146,7 +154,8 @@ Typically, we build a trajectory of $N_{\mathrm{LF}}$ leapfrog steps
 %
 and propose $x'$ as the next state in our chain.
 %
-This proposal state is accepted according to the Metropolis-Hastings criteria~\cite{mh}.
+This proposal state is accepted according to the Metropolis-Hastings
+criteria~\cite{mh}.
 %
 \begin{equation}
 A(x'|x) = \mathrm{min}\left\{{1, \frac{\pi(x')}{\pi(x)} \left| \frac{\partial x'}{\partial x} \right|}\right\}.
@@ -159,21 +168,26 @@ A(x'|x) = \mathrm{min}\left\{{1, \frac{\pi(x')}{\pi(x)} \left| \frac{\partial x'
   %\vspace{-25pt}
     \includegraphics[width=\linewidth]{assets/leapfrog-layer-alt-2.pdf}
   \end{center}
-    \caption{\label{fig:lf-layer}Illustration of the generalized MD update $\texttt{leapfrog layer}: (x, v) \rightarrow (x'', v'')$.}
+    \caption{\label{fig:lf-layer}Illustration of the generalized MD update
+    $\texttt{leapfrog layer}: (x, v) \rightarrow (x'', v'')$.}
 \end{wrapfigure}
 %
-Unfortunately, HMC is known to suffer from long auto-correlations and often struggles with multi-modal target densities.
+Unfortunately, HMC is known to suffer from long auto-correlations and often
+struggles with multi-modal target densities.
 %
-Instead, we propose building on the approach from~\cite{L2HMC,FTHMC,etc}. We introduce two (invertible) neural networks (\texttt{xNet}, \texttt{vNet}):
+Instead, we propose building on the approach from~\cite{L2HMC,FTHMC,etc}. We
+introduce two (invertible) neural networks (\texttt{xNet}, \texttt{vNet}):
 %
 \begin{align}
 \texttt{vNet}&: (x, F) \rightarrow (s_{v}, t_{v}, q_{v}) \\
 \texttt{xNet}&: (x, v) \rightarrow (s_{x}, t_{x}, q_{x})
 \end{align}
 %
-where $s, t, q$ are all of the same dimensionality as $x$ and $v$, and are parameterized by a set of weights $\theta$.
+where $s, t, q$ are all of the same dimensionality as $x$ and $v$, and are
+parameterized by a set of weights $\theta$.
 %
-These network outputs $(s, t, q)$ are then used in a generalized MD update (as shown in Fig~\ref{fig:lf-layer}) via:
+These network outputs $(s, t, q)$ are then used in a generalized MD update (as
+shown in Fig~\ref{fig:lf-layer}) via:
 %
 
 \begin{align}
@@ -181,10 +195,16 @@ These network outputs $(s, t, q)$ are then used in a generalized MD update (as s
 \Lambda^{\pm}_{\theta}&: (x, v) \rightarrow (x', v).
 \end{align}
 %
-where the superscript $\pm$ on $\Gamma^{\pm}_{\theta}, \Lambda^{\pm}_{\theta}$ correspond to the direction $d \sim \mathcal{U}(-1, +1)$ of the update\footnote{We can simplify this and \textit{absorb} the directional (forward / backward) random variable by explicitly constructing trajectories consisting of $n$ \textit{forward} $(+)$ steps followed by $n$ \emph{backward} $(-)$ steps. See \textcolor{red}{Appendix XXX for details.}}.
+where the superscript $\pm$ on $\Gamma^{\pm}_{\theta}, \Lambda^{\pm}_{\theta}$
+correspond to the direction $d \sim \mathcal{U}(-1, +1)$ of the update.
 %
+% We can simplify this and \textit{absorb} the directional
+% (forward / backward) random variable by explicitly constructing trajectories
+% consisting of $n$ \textit{forward} $(+)$ steps followed by $n$ \emph{backward}
+% $(-)$ steps. See \textcolor{red}{Appendix XXX for details.}
 
-To ensure that our proposed update remains reversible, we split the $x$ update into two sub-updates on complementary subsets ($x = x_{A} \cup x_{B}$):
+To ensure that our proposed update remains reversible, we split the $x$ update
+into two sub-updates on complementary subsets ($x = x_{A} \cup x_{B}$):
 %
 \begin{align}
 v' &= \Gamma_{\theta}(x, v) \\
@@ -202,7 +222,8 @@ v'' &= \Gamma_{\theta}(x'', v')
         \item Re-sample $v \sim \mathcal{N}(0, 1)$
         \item Construct initial state $\xi \coloneqq (x, v)$
     \end{itemize}
-    \item \texttt{forward:} Generate proposal $\xi'$ by passing initial $\xi$ through $N_{\mathrm{LF}}$ leapfrog layers:
+    \item \texttt{forward:} Generate proposal $\xi'$ by passing initial $\xi$
+      through $N_{\mathrm{LF}}$ leapfrog layers:
     \begin{equation}
         \xi \xrightarrow[]{\mathrm{LF\,\,\, Layer}} \xi_{1} \rightarrow \cdots \rightarrow \xi_{N_{\mathrm{LF}}} = \xi' \coloneqq (x'', v'')
     \end{equation}
@@ -212,15 +233,18 @@ v'' &= \Gamma_{\theta}(x'', v')
             A(\xi'|\xi) = \mathrm{min}\left\{1, \frac{\pi(\xi')}{\pi(\xi)} \left|\mathcal{J}\left(\xi', \xi\right)\right|\right\},
             \label{eq:MH}
         \end{equation}
-        where $\left|\mathcal{J}(\xi',\xi)\right|$ is the determinant of the Jacobian.
+        where $\left|\mathcal{J}(\xi',\xi)\right|$ is the determinant of the
+        Jacobian.
     \end{itemize}
     \item \texttt{backward:} (if training)
     \begin{itemize}
-        \item Evaluate the loss function $\mathcal{L}(\xi', \xi)$ and back propagate
+        \item Evaluate the loss function $\mathcal{L}(\xi', \xi)$ and back
+          propagate
     \end{itemize}
     \item \texttt{return:} $x_{i+1}$
     \begin{itemize}
-        \item Evaluate MH criteria (Eq. ~\ref{eq:MH}) and return accepted config:
+        \item Evaluate MH criteria (Eq. ~\ref{eq:MH}) and return accepted
+          config:
         \begin{equation}
             x_{i+1} \gets \begin{cases}
                 x'' \quad \text{w/ prob.}\quad A(\xi'|\xi)  \\
@@ -247,7 +271,8 @@ U_{\mu}(x) &= \exp\left[i \omega_{\mu}^{k}(x) \lambda^{k} \right] \\
 &= e^{iW}, \quad W \in \mathfrak{su}(3)
 \end{align}
 %
-where $\omega_{\mu}^{k}(x) \in \mathbb{R}$ and $\lambda^{k}$ are the generators of $SU(3)$.
+where $\omega_{\mu}^{k}(x) \in \mathbb{R}$ and $\lambda^{k}$ are the generators
+of $SU(3)$.
 %
 We consider the standard Wilson gauge action
 %
@@ -266,28 +291,46 @@ where
   \begin{center}
   \caption{\label{fig:csd}$\delta Q \rightarrow 0$ with increasing $\beta$.}
   %\vspace{-25pt}
-  \includesvg[width=0.40\textwidth]{assets/critical_slowing_down}
+  % \includesvg[width=0.40\textwidth]{assets/critical_slowing_down.svg}
+  \includegraphics[width=0.40\textwidth]{assets/csd1}
   \end{center}
 \end{wrapfigure}
 %
-In particular, we are interested in measuring the (scalar) topological charge $Q$ on the lattice.
+In particular, we are interested in measuring the (scalar) topological charge
+$Q$ on the lattice.
 %
-Since different lattice configurations with the same value of $Q$ are related by a gauge transformation, they do not meaningfully contribute to our statistics.
+Since different lattice configurations with the same value of $Q$ are related
+by a gauge transformation, they do not meaningfully contribute to our
+statistics.
 %
-Because of this, we would like to gneconfigurations from different \textit{topological sectors}\footnote{Characterized by different values of $Q$} to reduce uncertainty in our statistical estimates.
+Because of this, we would like to gneconfigurations from different
+\textit{topological sectors}\footnote{Characterized by different values of $Q$}
+to reduce uncertainty in our statistical estimates.
 %
-By repeating this procedure at increasing spatial resolution ($\beta \propto 1 / a$\footnote{Here $a$ is the lattice spacing}), we are able to extrapolate our estimates to the continuum limit where they can be compared with experimental measurements.
+By repeating this procedure at increasing spatial resolution ($\beta \propto 1
+/ a$\footnote{Here $a$ is the lattice spacing}), we are able to extrapolate our
+estimates to the continuum limit where they can be compared with experimental
+measurements.
 %
 
-Current approaches (HMC, ...) are known to suffer from auto-correlation times which scale exponentially in this limit, significantly limiting their effectiveness.
+Current approaches (HMC, ...) are known to suffer from auto-correlation times
+which scale exponentially in this limit, significantly limiting their
+effectiveness.
 %
-This phenomenon can be seen in Fig~\ref{fig:csd}, where fluctuations in the topological charge $\delta Q = |Q^{i + 1} - Q^{i}|$ decreases as $\beta = 2 \rightarrow 3 \rightarrow \cdots$, and disappear completely ($Q = \mathrm{const.}$) by $\beta = 7$.
+This phenomenon can be seen in Fig~\ref{fig:csd}, where fluctuations in the
+topological charge $\delta Q = |Q^{i + 1} - Q^{i}|$ decreases as $\beta = 2
+\rightarrow 3 \rightarrow \cdots$, and disappear completely ($Q =
+\mathrm{const.}$) by $\beta = 7$.
 %
-%%Here we are interested in generating an ensemble of configurations on which we will calculate physical quantities of interest . As we calculate these quantities over increasingly many lattice configurations, we are able 
+% Here we are interested in generating an ensemble of configurations on which we
+% will calculate physical quantities of interest . As we calculate these
+% quantities over increasingly many lattice configurations, we are able 
 %
 
 \subsection{\label{subsec:hmc-4dSU3}MD Updates}
-As before, we introduce momenta $P_{\mu}(x) = P^{k}_{\mu}(x) \lambda^{k}$ conjugate to the real fields $\omega_{\mu}^{k}(x)$.
+%
+As before, we introduce momenta $P_{\mu}(x) = P^{k}_{\mu}(x) \lambda^{k}$
+conjugate to the real fields $\omega_{\mu}^{k}(x)$.
 
 %
 We can write the Hamiltonian as
@@ -348,9 +391,14 @@ and we can write the complete update:
 %
 
 \subsection{\label{sec:momentum-update}Momentum Update}
-In this case, our $\texttt{vNet}: (U, F) = (e^{iW}, F) \rightarrow (s_{P}, t_{P}, q_{P})$.
 %
-We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e. $\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U, F)\right] = (U, F)$}:
+In this case, our $\texttt{vNet}: (U, F) = (e^{iW}, F) \rightarrow (s_{P},
+t_{P}, q_{P})$.
+%
+We can use this in the momentum update $\Gamma^{\pm}_{\theta}$
+via\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e.
+$\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U,
+F)\right] = (U, F)$}:
 %
 \begin{enumerate}
     \item \texttt{forward}, $(+)$:
@@ -363,23 +411,29 @@ We can use this in the momentum update $\Gamma^{\pm}_{\theta}$ via\footnote{Note
     \end{equation}
 \end{enumerate}
 %
+\subsection{\label{subsec:gauge-update}Gauge Field Update}
+%
+
 
 \section{\label{sec:results}Results}
 %
 \begin{figure}[htpb!]
     \centering
     \begin{subfigure}{0.31\textwidth}
-        \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
+        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
+        \includegraphics[width=\textwidth]{assets/logdet-1.pdf}
         \caption{\label{subfig:logdet1} 100 train iters}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.31\textwidth}
-        \includesvg[width=\textwidth]{assets/logdet_ridgeplot2.svg}
+        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot2.svg}
+        \includegraphics[width=\textwidth]{assets/logdet-2.pdf}
         \caption{\label{subfig:logdet2} 500 train iters}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.31\textwidth}
-        \includesvg[width=\textwidth]{assets/logdet_ridgeplot3.svg}
+        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot3.svg}
+        \includegraphics[width=\textwidth]{assets/logdet-3.pdf}
         \caption{\label{subfig:logdet3} 1000 train iters}
     \end{subfigure}
     \caption{\label{fig:logdet}Evolution of $\left|\mathcal{J}\right|$ vs $N_{\mathrm{LF}}$ (\texttt{logdet}) during the first 1000 training iterations.}
