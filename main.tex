@@ -168,8 +168,8 @@ A(x'|x) = \mathrm{min}\left\{{1, \frac{\pi(x')}{\pi(x)} \left| \frac{\partial x'
   %\vspace{-25pt}
     \includegraphics[width=\linewidth]{assets/leapfrog-layer-alt-2.pdf}
   \end{center}
-    \caption{\label{fig:lf-layer}Illustration of the generalized MD update
-    $\texttt{leapfrog layer}: (x, v) \rightarrow (x'', v'')$.}
+  \caption{\label{fig:lf-layer}Illustration of the generalized MD update
+  $\texttt{leapfrog layer}: (x, v) \rightarrow (x'', v'')$.}
 \end{wrapfigure}
 %
 Unfortunately, HMC is known to suffer from long auto-correlations and often
@@ -189,13 +189,12 @@ parameterized by a set of weights $\theta$.
 These network outputs $(s, t, q)$ are then used in a generalized MD update (as
 shown in Fig~\ref{fig:lf-layer}) via:
 %
-
 \begin{align}
 \Gamma^{\pm}_{\theta}&: (x, v) \rightarrow (x, v') \\
 \Lambda^{\pm}_{\theta}&: (x, v) \rightarrow (x', v).
 \end{align}
 %
-where the superscript $\pm$ on $\Gamma^{\pm}_{\theta}, \Lambda^{\pm}_{\theta}$
+where the superscript $\pm$ on $\Gamma^{\pm}_{\theta}$, $\Lambda^{\pm}_{\theta}$
 correspond to the direction $d \sim \mathcal{U}(-1, +1)$ of the update.
 %
 % We can simplify this and \textit{absorb} the directional
@@ -203,6 +202,7 @@ correspond to the direction $d \sim \mathcal{U}(-1, +1)$ of the update.
 % consisting of $n$ \textit{forward} $(+)$ steps followed by $n$ \emph{backward}
 % $(-)$ steps. See \textcolor{red}{Appendix XXX for details.}
 
+%
 To ensure that our proposed update remains reversible, we split the $x$ update
 into two sub-updates on complementary subsets ($x = x_{A} \cup x_{B}$):
 %
