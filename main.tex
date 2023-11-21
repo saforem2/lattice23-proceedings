@@ -10,8 +10,23 @@
 %\usepackage{url}
 %\usepackage{biblatex}
 
-\usepackage[colorlinks]{hyperref}
+%\usepackage[colorlinks]{hyperref}
 \usepackage{cleveref}
+\usepackage{microtype}
+\usepackage[normalem]{ulem}
+\usepackage[ruled, vlined,inoutnumbered,rightnl]{algorithm2e}
+\SetAlFnt{\normalsize}
+\SetAlCapFnt{\normalsize}
+\SetAlCapNameFnt{\normalsize}
+
+\usepackage[pdfauthor={Sam Foreman},%
+   pdftitle={Deep Learning Hamiltonian Monte Carlo},%
+   % pagebackref=true,%
+   unicode,%
+   linktocpage=true,%
+   hyperfootnotes=true,
+   pdftex,
+]{hyperref}% add hypertext capabilities
 
 \usepackage{annotate-equations}
 \usepackage[skins,listings]{tcolorbox}
@@ -30,6 +45,28 @@
 
 
 \usepackage{pos}
+
+
+\definecolor{caribbeangreen}{rgb}{0.0, 0.8, 0.6}
+\definecolor{pinkred}{HTML}{FF2052}
+\definecolor{newred}{HTML}{f92672}
+\definecolor{newblue}{HTML}{007fff}
+\definecolor{newdarkblue}{HTML}{0282CA}
+\definecolor{newpurple}{HTML}{CC4FFF}
+\definecolor{myPurple}{HTML}{AE81FF}
+\definecolor{newgreen}{HTML}{51C569}
+\definecolor{newlightblue}{HTML}{71C8A7}
+\definecolor{linkblue}{HTML}{0282CA}
+\definecolor{linkblue1}{HTML}{2196F3}
+\definecolor{awesome}{HTML}{FF2052}
+\definecolor{darkviolet}{rgb}{0.58, 0.0, 0.83}
+%{448AFF}
+\hypersetup{
+  colorlinks=true,
+  urlcolor=newblue,
+  linkcolor=awesome,
+  citecolor=newpurple,
+}
 
 %\usepackage[dvipsnames]{xcolor}
 
@@ -310,7 +347,7 @@ v'' &= \Gamma_{\theta}(x'', v')
     \end{itemize}
     \item \texttt{return:} $x_{i+1}$
     \begin{itemize}
-        \item Evaluate MH criteria (Eq. ~\ref{eq:MH}) and return accepted
+        \item Evaluate MH criteria (Eq.~\ref{eq:MH}) and return accepted
           config:
         \begin{equation}
             x_{i+1} \gets \begin{cases}
@@ -331,25 +368,25 @@ v'' &= \Gamma_{\theta}(x'', v')
   \label{fig:lattice}
 \end{wrapfigure}
 %
-Write link variables $U_{\mu}(x) \in SU(3)$:
+Write link variables $U_{\mu}(n) \in SU(3)$:
 %
 \begin{align}
-U_{\mu}(x) &= \exp\left[i \omega_{\mu}^{k}(x) \lambda^{k} \right] \\
+U_{\mu}(n) &= \exp\left[i \omega_{\mu}^{k}(n) \lambda^{k} \right] \\
 &= e^{iW}, \quad W \in \mathfrak{su}(3)
 \end{align}
 %
-where $\omega_{\mu}^{k}(x) \in \mathbb{R}$ and $\lambda^{k}$ are the generators
+where $\omega_{\mu}^{k}(n) \in \mathbb{R}$ and $\lambda^{k}$ are the generators
 of $SU(3)$.
 %
 We consider the standard Wilson gauge action
 %
 \begin{equation}
-S_{G} = -\frac{\beta}{6}\sum \mathrm{Tr}\left[U_{\mu\nu}(x) + U^{\dagger}_{\mu\nu}(x) \right]
+S_{G} = -\frac{\beta}{6}\sum \mathrm{Tr}\left[U_{\mu\nu}(n) + U^{\dagger}_{\mu\nu}(n) \right]
 \end{equation}
 %
 where 
 \begin{equation*}
-    U_{\mu\nu}(x) = U_{\mu}(x) U_{\nu}(x + \hat{\mu}) U_{\mu}^{\dagger}(x + \hat{\nu}) U^{\dagger}_{\nu}(x).
+    U_{\mu\nu}(n) = U_{\mu}(n) U_{\nu}(n + \hat{\mu}) U_{\mu}^{\dagger}(n + \hat{\nu}) U^{\dagger}_{\nu}(n).
 \end{equation*}
 %
 In particular, we are interested in measuring the (scalar) topological charge
@@ -394,8 +431,8 @@ topological charge $\delta Q = |Q^{i + 1} - Q^{i}|$ decreases as $\beta = 2
 
 \subsection{\label{subsec:hmc-4dSU3}Generic MD Updates}
 %
-As before, we introduce momenta $P_{\mu}(x) = P^{k}_{\mu}(x) \lambda^{k}$
-conjugate to the real fields $\omega_{\mu}^{k}(x)$.
+As before, we introduce momenta $P_{\mu}(n) = P^{k}_{\mu}(n) \lambda^{k}$
+conjugate to the real fields $\omega_{\mu}^{k}(n)$.
 
 %
 We can write the Hamiltonian as
