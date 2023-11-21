@@ -9,8 +9,24 @@
 \usepackage[nottoc]{tocbibind}
 %\usepackage{url}
 %\usepackage{biblatex}
-\usepackage{cite}
-%\addbibresource{references.bib}
+
+\usepackage[colorlinks]{hyperref}
+\usepackage{cleveref}
+
+\usepackage{annotate-equations}
+\usepackage[skins,listings]{tcolorbox}
+  
+%\usepackage{courier}
+\usepackage{xargs}% Use more than one optional parameter in a new commands
+\usepackage[document]{ragged2e}
+\usepackage{wrapfig}
+\usepackage{svg}
+\usepackage{lineno}
+\usepackage{subcaption}
+\usepackage[colorinlistoftodos,prependcaption]{todonotes}
+\usepackage{empheq}
+\usepackage{xcolor}
+
 
 
 \usepackage{pos}
@@ -19,7 +35,7 @@
 
 %%% standard math packages for equations:
 \usepackage{amsmath}
-\usepackage{amssymb}
+%\usepackage{amssymb}
 \usepackage{mathtools}
 
 \newcommand{\boxedeq}[2]{\begin{empheq}[box={\fboxsep=6pt\fbox}]{align}\label{#1}#2\end{empheq}}
@@ -51,24 +67,10 @@
 } 
 \makeatother
 
-\usepackage{hyperref}
-\usepackage{cleveref}
-
-\usepackage{annotate-equations}
 \setlength{\fboxsep}{3pt} 
 \setlength{\fboxrule}{0.7pt}
 
 %\usepackage{showexpl} % LTXexample
-\usepackage[skins,listings]{tcolorbox}
-  
-%\usepackage{courier}
-\usepackage{xargs}% Use more than one optional parameter in a new commands
-\usepackage[document]{ragged2e}
-\usepackage{wrapfig}
-\usepackage{svg}
-\usepackage{lineno}
-\usepackage{subcaption}
-\usepackage[colorinlistoftodos,prependcaption]{todonotes}
 %\usepackage[colorlinks]{hyperref}
 %
 %\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
@@ -86,9 +88,6 @@
 %\definecolor{myorange}{RGB}{219, 48, 122}
 
 \newcommand{\update}[1]{{\textcolor{red}{#1}}}
-
-\usepackage{empheq}
-\usepackage{xcolor}
 
 \definecolor{myPink}{HTML}{EC407A}
 \definecolor{myOrange}{HTML}{FFA726}
@@ -365,8 +364,8 @@ Because of this, we would like to generate configurations from different
 \textit{topological sectors}\footnote{Characterized by different values of $Q$}
 to reduce uncertainty in our statistical estimates.
 %
-By repeating this procedure at increasing spatial resolution ($\beta \propto 1
-/ a$\footnote{Here $a$ is the lattice spacing}), we are able to extrapolate our
+By repeating this procedure at increasing spatial resolution\footnote{Here $a$ is the lattice spacing} ($\beta \propto 1
+/ a$), we are able to extrapolate our
 estimates to the continuum limit where they can be compared with experimental
 measurements.
 
