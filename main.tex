@@ -2,27 +2,96 @@
 % Please make sure you insert your
 % data according to the instructions in PoSauthmanual.pdf
 \documentclass[a4paper,11pt]{article}
+\usepackage[scaled]{DejaVuSansMono}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+%Includes "References" in the table of contents
+\usepackage[nottoc]{tocbibind}
+%\usepackage{url}
+%\usepackage{biblatex}
+\usepackage{cite}
+%\addbibresource{references.bib}
+
+
 \usepackage{pos}
+
+%\usepackage[dvipsnames]{xcolor}
+
+%%% standard math packages for equations:
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+\newcommand{\boxedeq}[2]{\begin{empheq}[box={\fboxsep=6pt\fbox}]{align}\label{#1}#2\end{empheq}}
+\newcommand{\coloredeq}[3]{\begin{empheq}[box=\colorbox{#2}]{align}\label{#1}#3\end{empheq}}
+
+\makeatletter
+\newcommand*\Acolorboxed[2][red]{%
+   \let\bgroup{\romannumeral-`}%
+   \@Acolorboxed{#1}#2&&\ENDDNE
+}
+\def\@Acolorboxed#1#2&#3&#4\ENDDNE{%
+  \ifnum0=`{}\fi
+  \setbox\z@\hbox{$\displaystyle#2{}\m@th$\kern\fboxsep \kern\fboxrule}%
+  \edef\@tempa{\kern\wd\z@ & \kern-\the\wd\z@ \fboxsep\the\fboxsep \fboxrule\the\fboxrule}%
+  \@tempa
+  \fcolorbox{#1}{#1}{\m@th$\displaystyle#2#3$}%
+} 
+
+\newcommand*\Aoutlineboxed[2][red]{%
+   \let\bgroup{\romannumeral-`}%
+   \@Aoutlineboxed{#1}#2&&\ENDDNE
+}
+\def\@Aoutlineboxed#1#2&#3&#4\ENDDNE{%
+  \ifnum0=`{}\fi
+  \setbox\z@\hbox{$\displaystyle#2{}\m@th$\kern\fboxsep \kern\fboxrule}%
+  \edef\@tempa{\kern\wd\z@ & \kern-\the\wd\z@ \fboxsep\the\fboxsep \fboxrule\the\fboxrule}%
+  \@tempa
+  \fcolorbox{#1}{white}{\m@th$\displaystyle#2#3$}%
+} 
+\makeatother
+
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+\usepackage{annotate-equations}
+\setlength{\fboxsep}{3pt} 
+\setlength{\fboxrule}{0.7pt}
+
+%\usepackage{showexpl} % LTXexample
+\usepackage[skins,listings]{tcolorbox}
+  
+%\usepackage{courier}
+\usepackage{xargs}% Use more than one optional parameter in a new commands
 \usepackage[document]{ragged2e}
 \usepackage{wrapfig}
-%\renewcommand*\familydefault{\ttfamily} %% Only if the base font of the document is to be typewriter style
-%{\ttfamily ...}
-\usepackage[T1]{fontenc}
-
-% \usepackage{svglatex}
-
-% \usepackage{ifluatex}
-% \ifluatex
-%   \usepackage{pdftexcmds}
-%   \makeatletter
-%   \let\pdfstrcmp\pdf@strcmp
-%   \let\pdffilemoddate\pdf@filemoddate
-%   \makeatother
-% \fi
 \usepackage{svg}
-% \usepackage[write18]{svg}
 \usepackage{lineno}
 \usepackage{subcaption}
+\usepackage[colorinlistoftodos,prependcaption]{todonotes}
+%\usepackage[colorlinks]{hyperref}
+%
+%\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+%\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+%\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+%\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+
+\newcommandx{\fix}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+\definecolor{sam}{RGB}{28, 28, 28}
+\newcommand{\sam}[1]{{\textcolor{sam}{[Sam] #1}}}
+
+%\definecolor{myOrange}{RGB}{36,85,100}
+%\definecolor{myorange}{RGB}{219, 48, 122}
+
+\newcommand{\update}[1]{{\textcolor{red}{#1}}}
+
+\usepackage{empheq}
+\usepackage{xcolor}
+
+\definecolor{myPink}{HTML}{EC407A}
+\definecolor{myOrange}{HTML}{FFA726}
 
 \linenumbers
 
@@ -60,6 +129,7 @@ Fermi National Accelerator Laboratory\\}
 \begin{document}
 \maketitle
 
+\tableofcontents
 
 \section{\label{sec:intro}Introduction}
 
@@ -86,28 +156,25 @@ Instead, nearby configurations are correlated, causing us to incur a factor of
 $\tau_{\mathrm{int}}^{\mathcal{O}}$ in the variance expression
 %
 \begin{equation}
-\sigma_{\mathcal{O}}^{2} = \frac{\tau_{\mathrm{int}}^{\mathcal{O}}}{N} \mathrm{Var}\left[\mathcal{O}(x)\right]
+\sigma_{\mathcal{O}}^{2} = \frac{\tau_{\mathrm{int}}^{\mathcal{O}}}{N} \mathrm{Var}\left[\mathcal{O}(x)\right].
 \end{equation}
 
 
 \subsection{\label{subsec:hmc}Hamiltonian Monte Carlo (HMC)}
 %
-The typical approach~\cite{HMC} is to use Hamiltonian Monte Carlo (HMC)
-algorithm for generating configurations distributed according to our
-target distribution $\pi(x)$.
+The typical approach~\cite{foreman_deep_2021,foreman_leapfroglayers_2022} is to use 
 %
-% This typically 
-% to help
-% reduce these auto-correlations.
+Hamiltonian Monte Carlo (HMC) algorithm for generating configurations 
 %
-Specifically, we want to (sequentially) construct a chain of states:
+distributed according to our target distribution $\pi(x)$.
 %
-\begin{wrapfigure}[22]{l}{0.33\textwidth}
+This can be done by sequentially constructing a chain of states:
+%
+\begin{wrapfigure}[21]{l}{0.33\textwidth}
   \begin{center}
-  %\vspace{-25pt}
-  \includegraphics[width=0.33\textwidth]{assets/hmc-update6.pdf}
+  \includegraphics[width=\linewidth]{assets/hmc-update6.pdf}
+  \caption{\label{fig:hmc-update}Illustration of the leapfrog update for HMC.}
   \end{center}
-    \caption{\label{fig:hmc-update}Illustration of the leapfrog update for HMC.}
 \end{wrapfigure}
 %
 \begin{equation}
@@ -117,7 +184,7 @@ x_{0} \rightarrow x_{1} \rightarrow x_{i} \rightarrow \cdots \rightarrow x_{n}
 such that, as $n \rightarrow \infty$:
 %
 \begin{equation}
-\left\{x_{i}, x_{i+1}, x_{i+2}, \ldots, x_{n}\right\} \xrightarrow[]{n\rightarrow\infty} \pi(x)
+\left\{x_{i}, x_{i+1}, x_{i+2}, \ldots, x_{n}\right\} \sim \pi(x).
 \end{equation}
 %
 To do this, we begin by introducing a fictitious momentum\footnote{Here $\sim$
@@ -154,8 +221,8 @@ Typically, we build a trajectory of $N_{\mathrm{LF}}$ leapfrog steps
 %
 and propose $x'$ as the next state in our chain.
 %
-This proposal state is accepted according to the Metropolis-Hastings
-criteria~\cite{mh}.
+This proposal state is then accepted according to the Metropolis-Hastings
+criteria~\cite{robert_metropolis-hastings_2016}
 %
 \begin{equation}
 A(x'|x) = \mathrm{min}\left\{{1, \frac{\pi(x')}{\pi(x)} \left| \frac{\partial x'}{\partial x} \right|}\right\}.
@@ -175,23 +242,24 @@ A(x'|x) = \mathrm{min}\left\{{1, \frac{\pi(x')}{\pi(x)} \left| \frac{\partial x'
 Unfortunately, HMC is known to suffer from long auto-correlations and often
 struggles with multi-modal target densities.
 %
-Instead, we propose building on the approach from~\cite{L2HMC,FTHMC,etc}. We
-introduce two (invertible) neural networks (\texttt{xNet}, \texttt{vNet}):
+Instead, we propose building on the approach from~\cite{foreman_learning_2019,foreman_deep_2021,foreman_leapfroglayers_2022}. 
+%
+We introduce two (invertible) neural networks (\texttt{xNet}, \texttt{vNet}):
 %
 \begin{align}
-\texttt{vNet}&: (x, F) \rightarrow (s_{v}, t_{v}, q_{v}) \\
-\texttt{xNet}&: (x, v) \rightarrow (s_{x}, t_{x}, q_{x})
+\texttt{vNet}&: (x, F) \rightarrow (\alpha_{v}, \beta_{v}, \gamma_{v}) \\
+\texttt{xNet}&: (x, v) \rightarrow (\alpha_{x}, \beta_{x}, \gamma_{x})
 \end{align}
 %
-where $s, t, q$ are all of the same dimensionality as $x$ and $v$, and are
+where $\left(\alpha, \beta, \gamma\right)$ are all of the same dimensionality as $x$ and $v$, and are
 parameterized by a set of weights $\theta$.
 %
-These network outputs $(s, t, q)$ are then used in a generalized MD update (as
+These network outputs $(\alpha, \beta, \gamma)$ are then used in a generalized MD update (as
 shown in Fig~\ref{fig:lf-layer}) via:
 %
 \begin{align}
-\Gamma^{\pm}_{\theta}&: (x, v) \rightarrow (x, v') \\
-\Lambda^{\pm}_{\theta}&: (x, v) \rightarrow (x', v).
+\Aoutlineboxed[myPink]{\Gamma^{\pm}_{\theta}&}: (x, v) \rightarrow (x, v') \\
+\Aoutlineboxed[myOrange]{\Lambda^{\pm}_{\theta}&}: (x, v) \rightarrow (x', v).
 \end{align}
 %
 where the superscript $\pm$ on $\Gamma^{\pm}_{\theta}$, $\Lambda^{\pm}_{\theta}$
@@ -284,17 +352,6 @@ where
 \begin{equation*}
     U_{\mu\nu}(x) = U_{\mu}(x) U_{\nu}(x + \hat{\mu}) U_{\mu}^{\dagger}(x + \hat{\nu}) U^{\dagger}_{\nu}(x).
 \end{equation*}
-
-%
-
-\begin{wrapfigure}[22]{L}{0.40\textwidth}
-  \begin{center}
-  \caption{\label{fig:csd}$\delta Q \rightarrow 0$ with increasing $\beta$.}
-  %\vspace{-25pt}
-  % \includesvg[width=0.40\textwidth]{assets/critical_slowing_down.svg}
-  \includegraphics[width=0.40\textwidth]{assets/csd1}
-  \end{center}
-\end{wrapfigure}
 %
 In particular, we are interested in measuring the (scalar) topological charge
 $Q$ on the lattice.
@@ -303,7 +360,8 @@ Since different lattice configurations with the same value of $Q$ are related
 by a gauge transformation, they do not meaningfully contribute to our
 statistics.
 %
-Because of this, we would like to gneconfigurations from different
+
+Because of this, we would like to generate configurations from different
 \textit{topological sectors}\footnote{Characterized by different values of $Q$}
 to reduce uncertainty in our statistical estimates.
 %
@@ -311,12 +369,20 @@ By repeating this procedure at increasing spatial resolution ($\beta \propto 1
 / a$\footnote{Here $a$ is the lattice spacing}), we are able to extrapolate our
 estimates to the continuum limit where they can be compared with experimental
 measurements.
+
+\begin{wrapfigure}[21]{l}{0.40\textwidth}
+  \begin{center}
+  \caption{\label{fig:csd}$\delta Q \rightarrow 0$ with increasing $\beta$ for the 2D $U(1)$ model. Image from~\cite{foreman_leapfroglayers_2022}.}
+  \includegraphics[width=\linewidth]{assets/csd1}
+  \end{center}
+\end{wrapfigure}
 %
 
 Current approaches (HMC, ...) are known to suffer from auto-correlation times
 which scale exponentially in this limit, significantly limiting their
 effectiveness.
 %
+
 This phenomenon can be seen in Fig~\ref{fig:csd}, where fluctuations in the
 topological charge $\delta Q = |Q^{i + 1} - Q^{i}|$ decreases as $\beta = 2
 \rightarrow 3 \rightarrow \cdots$, and disappear completely ($Q =
@@ -327,7 +393,7 @@ topological charge $\delta Q = |Q^{i + 1} - Q^{i}|$ decreases as $\beta = 2
 % quantities over increasingly many lattice configurations, we are able 
 %
 
-\subsection{\label{subsec:hmc-4dSU3}MD Updates}
+\subsection{\label{subsec:hmc-4dSU3}Generic MD Updates}
 %
 As before, we introduce momenta $P_{\mu}(x) = P^{k}_{\mu}(x) \lambda^{k}$
 conjugate to the real fields $\omega_{\mu}^{k}(x)$.
@@ -350,8 +416,17 @@ by Hamilton's equations
 To update the gauge field $U_{\mu} = e^{i\omega_{\mu}^{k} \lambda^{k}}$,
 %
 \begin{equation}
-    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} \Longrightarrow \frac{dW}{dt} = P
+    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} \Longrightarrow \frac{dW}{dt} = P.
 \end{equation}
+%
+%\begin{LTXexample}[text outside listing,lefthand width=1in]
+%\begin{equation*}
+%    \eqnmarkbox[blue]{node1}{e_q^n}
+%    \eqnmark[red]{node2}{f(x)}
+%    \tikzmarknode{node3}{kT}
+%\end{equation*}
+%\annotate[yshift=1em]{}{node1,node2}{my annotation text}
+%\end{LTXexample}
 %
 Discretizing with step size $\varepsilon$,
 %
@@ -359,25 +434,30 @@ Discretizing with step size $\varepsilon$,
     W(\varepsilon) &= W(0) + \varepsilon P(0) \Longrightarrow \\
     -i \log U(\varepsilon) &= - i \log U(0) + \varepsilon P(0) \\
     U(\varepsilon) &= e^{i \varepsilon P(0)} U(0) \Longrightarrow \\
-    \Lambda: U \rightarrow U' &= e^{i \varepsilon P} U
+    \Aoutlineboxed[myOrange]{\Lambda: U \rightarrow U' &= e^{i \varepsilon P} U}
 \end{align}
-%
 
 Similarly for the momentum update,
 %
 \begin{align}
     \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}} &= - \frac{\partial H}{\partial W} = - \frac{dS}{dW} \Longrightarrow \\
     P(\varepsilon) &= P(0) - \varepsilon \left.\frac{dS}{dW}\right|_{t=0} = P(0) - \varepsilon F[U]\\
-    \Gamma: P \rightarrow P' &= P - \frac{\varepsilon}{2} F[U]
+    \Aoutlineboxed[myPink]{\Gamma: P \rightarrow P' &= P - \frac{\varepsilon}{2} F[U]}
 \end{align}
 %
 where $F[U]$ is the force term.
 %
+\subsection{\label{subsec:generalized-md-4dSU3}Generalized MD Update}
+As in Sec.\ref{sec:method}, we introduce \texttt{pNet}: $(U, F) \rightarrow \left(\alpha_{P}, \beta_{P},
+%
+\gamma_{P}\right)$ and \texttt{uNet}: $(U, P) \rightarrow \left(\,\cdot\,, \beta_{U}, \gamma_{U}\right)$.
+%
+
 In terms of the operators
 %
 \begin{align}
-    \Gamma^{\pm}_{\theta}&: (U, P) \xrightarrow[]{\left(s_{P}, t_{P}, q_{P}\right)} (U, P') \\
-    \Lambda^{\pm}_{\theta}&: (U, P)\xrightarrow[]{\left(s_{U}, t_{U}, q_{U}\right)} (U', P) 
+    \Aoutlineboxed[myPink]{\Gamma^{\pm}_{\theta}&}: (U, P) \xrightarrow[]{\left(\alpha_{P}, \beta_{P}, \gamma_{P}\right)} (U, P') \\
+    \Aoutlineboxed[myOrange]{\Lambda^{\pm}_{\theta}&}: (U, P)\xrightarrow[]{\left(\, \cdot ,\, \beta_{U}, \gamma_{U}\right)} (U', P)
 \end{align}
 %
 and we can write the complete update:
@@ -392,28 +472,73 @@ and we can write the complete update:
 
 \subsection{\label{sec:momentum-update}Momentum Update}
 %
-In this case, our $\texttt{vNet}: (U, F) = (e^{iW}, F) \rightarrow (s_{P},
-t_{P}, q_{P})$.
+In this case, our $\texttt{vNet}: (U, F) = (e^{iW}, F) \rightarrow (\alpha_{P},
+\beta_{P}, \gamma_{P})$.
 %
-We can use this in the momentum update $\Gamma^{\pm}_{\theta}$
+We can use this in the momentum update $\Gamma^{\pm}_{\theta}: (U, P) \rightarrow P^{\pm}$
 via\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e.
 $\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U,
 F)\right] = (U, F)$}:
 %
+\begin{equation}
+    P^{\pm} \coloneqq \Gamma_{\theta}^{\pm}(U, P),
+\end{equation}
+%
+where:
+%
 \begin{enumerate}
     \item \texttt{forward}, $(+)$:
     \begin{equation}
-        \Gamma^{+}(U, F) = P \cdot e^{\frac{\varepsilon}{2} s_{P}} - \frac{\varepsilon}{2}\left[ F \cdot e^{\varepsilon q_{P}} + t_{P} \right]
+        P^{+} \coloneqq \Gamma_{\theta}^{+}(U, P) = P \cdot e^{\frac{\varepsilon}{2} \alpha_{P}} - \frac{\varepsilon}{2}\left[ F \cdot e^{\varepsilon \beta_{P}} + \gamma_{P} \right]
     \end{equation}
     \item \texttt{backward}, $(-)$:
     \begin{equation}
-        \Gamma^{-}(U, F) = e^{-\frac{\varepsilon}{2} s_{P}} \left\{P + \frac{\varepsilon}{2} \left[ F \cdot e^{\varepsilon q_{P}} + t_{P} \right] \right\}
+        P^{-} \coloneqq \Gamma_{\theta}^{-}(U, P) = e^{-\frac{\varepsilon}{2} \alpha_{P}} \cdot \left\{P + \frac{\varepsilon}{2} \left[ F \cdot e^{\varepsilon \beta_{P}} + \gamma_{P} \right] \right\}.
     \end{equation}
 \end{enumerate}
 %
-\subsection{\label{subsec:gauge-update}Gauge Field Update}
-%
+By introducing the above modifications, we incur a factor of
 
+\begin{equation}
+    \log\left|\frac{\partial P^{\pm}}{\partial P}\right| = \, \pm \, \frac{\varepsilon}{2}\sum \alpha_{P}
+\end{equation}
+%
+in the Metropolis Hastings accept / reject $A(U'|U)$, and the sum is taken over the full trajectory.
+%
+\subsection{\label{subsec:gauge-update}Link Update}
+%
+Similarly to the momentum update, the outputs from our $\texttt{uNet}: (U, P) \rightarrow \left(\, \cdot\,, \beta_{U}, \gamma_{U}\right)$ in the generalized link update $\Lambda^{\pm}_{\theta}: (U, P) \rightarrow U^{\pm}$
+%
+\begin{equation}
+  U^{\pm} \coloneqq \Lambda^{\pm}(U, P) = e^{i\varepsilon \tilde{P}^{\pm}} U
+\end{equation}
+%
+where $\tilde{P}^{\pm} \in \mathfrak{su(3)}$. Explicitly:
+\begin{enumerate}
+\item \texttt{forward}, $(+)$:
+    \begin{equation}
+        U^{+} \coloneqq \Lambda^{+}_{\theta}(U, P) = e^{i\varepsilon \tilde{P}^{+}} U, \quad \text{with}\quad \tilde{P}^{+} = \left[P\odot e^{\varepsilon \beta_{U}} + \gamma_{U}\right]
+    \end{equation}
+%
+\item \texttt{backward}, $(-)$:
+%
+    \begin{equation}
+        U^{-} \coloneqq \Lambda^{-}_{\theta}(U, P) = e^{i\varepsilon \tilde{P}^{-}} U, \quad \text{with}\quad \tilde{P}^{-} = e^{-\varepsilon \beta_{U}} \cdot \left[P - \gamma_{U} \right] 
+    \end{equation}
+%
+\end{enumerate}
+%
+\subsection{\label{subsec:training}Training}
+%
+We construct a loss function using the expected squared charge
+difference
+%
+\begin{equation}
+    \mathcal{L}_{\theta}(U, U') = \mathbb{E}\left[A(U'|U)\,\cdot \delta^{2}_{Q}(U, U')\right],
+\end{equation}
+%
+where $\delta^{2}_{Q}(U, U')= |Q' - Q|^{2}$ is the squared topological
+charge difference between the initial and proposal configurations.
 
 \section{\label{sec:results}Results}
 %
@@ -447,8 +572,15 @@ F)\right] = (U, F)$}:
 
 
 \section{\label{sec:conclusion}Conclusion}
-\color{red}{TODO}
+\textcolor{red}{TODO}
 
+
+\clearpage
+
+\nocite{*}
+%\printbibliography
+\bibliography{references}{}
+\bibliographystyle{abbrvnat}
 %\begin{thebibliography}{99}
 %\bibitem{...}
 %....
