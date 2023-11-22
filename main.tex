@@ -361,10 +361,10 @@ v'' &= \Gamma_{\theta}(x'', v')
 %
 \subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
 %
-\begin{wrapfigure}[18]{r}{0.4\textwidth}
+\begin{wrapfigure}[10]{r}{0.54\textwidth}
   \begin{center}
-    \caption{Illustration of the lattice}
-    \includegraphics[width=0.4\textwidth]{assets/lattice}
+    \caption{\label{fig:lattice}Illustration of the lattice}
+    \includegraphics[width=0.54\textwidth]{assets/lattice-horizontal1.pdf}
   \end{center}
   \label{fig:lattice}
 \end{wrapfigure}
@@ -386,9 +386,9 @@ S_{G} = -\frac{\beta}{6}\sum \mathrm{Tr}\left[U_{\mu\nu}(n) + U^{\dagger}_{\mu\n
 \end{equation}
 %
 where 
-\begin{equation*}
+\begin{equation}
     U_{\mu\nu}(n) = U_{\mu}(n) U_{\nu}(n + \hat{\mu}) U_{\mu}^{\dagger}(n + \hat{\nu}) U^{\dagger}_{\nu}(n).
-\end{equation*}
+\end{equation}
 %
 In particular, we are interested in measuring the (scalar) topological charge
 $Q$ on the lattice.
@@ -397,7 +397,6 @@ Since different lattice configurations with the same value of $Q$ are related
 by a gauge transformation, they do not meaningfully contribute to our
 statistics.
 %
-
 Because of this, we would like to generate configurations from different
 \textit{topological sectors}\footnote{Characterized by different values of $Q$}
 to reduce uncertainty in our statistical estimates.
@@ -407,7 +406,7 @@ By repeating this procedure at increasing spatial resolution\footnote{Here $a$ i
 estimates to the continuum limit where they can be compared with experimental
 measurements.
 
-\begin{wrapfigure}[21]{l}{0.40\textwidth}
+\begin{wrapfigure}[23]{l}{0.47\textwidth}
   \begin{center}
   \caption{\label{fig:csd}$\delta Q \rightarrow 0$ with increasing $\beta$ for the 2D $U(1)$ model. Image from~\cite{foreman_leapfroglayers_2022}.}
   \includegraphics[width=\linewidth]{assets/csd1}
@@ -620,7 +619,25 @@ charge (see~\ref{subsec:topological_charge}) difference between the initial and 
 %\end{figure}
 
 \section{\label{sec:conclusion}Conclusion}
-\textcolor{red}{TODO}
+%
+In this work we've introduced a generalized MD update for generating 4D SU(3) gauge configurations that can be trained to improve sampling efficiency.
+%
+Note that this is a relatively simple proof of concept demonstrating how to construct such a sampler.
+%
+In a future work we plan to further investigate (and quantify) the cost / benefit when compared to alternative approaches such as traditional HMC and purely generative (OT / KL-Divergence~\cite{albergo_flow-based_2019,albergo_introduction_2021,boyda_sampling_2021,kanwar_equivariant_2020} based approaches.
+%
+Additional items to consider:
+\begin{itemize}
+    \item{Cost of training (+ how this scales with lattice volume, trajectory length, etc)}
+    \item{Better / more flexible transformations}
+    \begin{itemize}
+        \item Gauge equivariant transformations, etc
+    \end{itemize}
+    \item{Transfer learning, training individual kernels}
+\end{itemize}
+
+\section{\label{sec:acknowledgements}Acknowledgements}
+\fix[inline]{Add ALCF + DOE + ECP acks}
 
 \appendix
 
