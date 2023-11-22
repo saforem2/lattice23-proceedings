@@ -7,11 +7,11 @@
 \usepackage[english]{babel}
 %Includes "References" in the table of contents
 \usepackage[nottoc]{tocbibind}
+\usepackage{amsmath}
 %\usepackage{url}
 %\usepackage{biblatex}
 
 %\usepackage[colorlinks]{hyperref}
-\usepackage{cleveref}
 \usepackage{microtype}
 \usepackage[normalem]{ulem}
 \usepackage[ruled, vlined,inoutnumbered,rightnl]{algorithm2e}
@@ -59,6 +59,7 @@
 \definecolor{linkblue}{HTML}{0282CA}
 \definecolor{linkblue1}{HTML}{2196F3}
 \definecolor{awesome}{HTML}{FF2052}
+\definecolor{myPeriwinkle}{HTML}{8075E6} % {8e82fe}
 \definecolor{darkviolet}{rgb}{0.58, 0.0, 0.83}
 %{448AFF}
 \hypersetup{
@@ -71,7 +72,7 @@
 %\usepackage[dvipsnames]{xcolor}
 
 %%% standard math packages for equations:
-\usepackage{amsmath}
+\usepackage{cleveref}
 %\usepackage{amssymb}
 \usepackage{mathtools}
 
@@ -278,7 +279,7 @@ A(x'|x) = \mathrm{min}\left\{{1, \frac{\pi(x')}{\pi(x)} \left| \frac{\partial x'
 Unfortunately, HMC is known to suffer from long auto-correlations and often
 struggles with multi-modal target densities.
 %
-Instead, we propose building on the approach from~\cite{foreman_learning_2019,foreman_deep_2021,foreman_leapfroglayers_2022}. 
+To combat this, we propose building on the approach from~\cite{foreman_learning_2019,foreman_deep_2021,foreman_leapfroglayers_2022}. 
 %
 We introduce two (invertible) neural networks (\texttt{xNet}, \texttt{vNet}):
 %
@@ -481,7 +482,19 @@ Similarly for the momentum update,
     \Aoutlineboxed[myPink]{\Gamma: P \rightarrow P' &= P - \frac{\varepsilon}{2} F[U]}
 \end{align}
 %
-where $F[U]$ is the force term.
+where $F[U] = \frac{dS}{dW}$ is the force term (see~\ref{subsec:force_term}).
+%
+
+Finally, we can express the full HMC updates as:
+%
+\begin{align}
+    \Aoutlineboxed[myPink]{\Gamma&}: P \longrightarrow P' \coloneqq P - \varepsilon F[U] \quad \texttt{(momentum update)}\\
+    \Aoutlineboxed[myOrange]{\Lambda&}: U \longrightarrow U' \coloneqq e^{i \varepsilon P} \quad \quad \quad \,\,\,\, \texttt{(link update)}
+\end{align}
+%\begin{enumerate}
+%    \item{Momentum update: $\Gamma: P \rightarrow P - \varepsilon\, F[U]$}
+%    \item{Gauge link update: $\Lambda: U \rightarrow e^{i\varepsilon P}U$}
+%\end{enumerate}
 %
 \subsection{\label{subsec:generalized-md-4dSU3}Generalized MD Update}
 As in Sec.\ref{sec:method}, we introduce \texttt{pNet}: $(U, F) \rightarrow \left(\alpha_{P}, \beta_{P},
@@ -489,14 +502,14 @@ As in Sec.\ref{sec:method}, we introduce \texttt{pNet}: $(U, F) \rightarrow \lef
 \gamma_{P}\right)$ and \texttt{uNet}: $(U, P) \rightarrow \left(\,\cdot\,, \beta_{U}, \gamma_{U}\right)$.
 %
 
-In terms of the operators
+In terms of the generalized update operators
 %
 \begin{align}
     \Aoutlineboxed[myPink]{\Gamma^{\pm}_{\theta}&}: (U, P) \xrightarrow[]{\left(\alpha_{P}, \beta_{P}, \gamma_{P}\right)} (U, P') \\
     \Aoutlineboxed[myOrange]{\Lambda^{\pm}_{\theta}&}: (U, P)\xrightarrow[]{\left(\, \cdot ,\, \beta_{U}, \gamma_{U}\right)} (U', P)
 \end{align}
 %
-and we can write the complete update:
+we can write the complete update:
 %
 \begin{align}
     P' &= \Gamma^{\pm}_{\theta}(U, P) \\
@@ -514,7 +527,7 @@ In this case, our $\texttt{vNet}: (U, F) = (e^{iW}, F) \rightarrow (\alpha_{P},
 We can use this in the momentum update $\Gamma^{\pm}_{\theta}: (U, P) \rightarrow P^{\pm}$
 via\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e.
 $\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U,
-F)\right] = (U, F)$}:
+F)\right] = (U, F)$, and similarly for $\Lambda^{\pm}$}:
 %
 \begin{equation}
     P^{\pm} \coloneqq \Gamma_{\theta}^{\pm}(U, P),
@@ -574,7 +587,7 @@ difference
 \end{equation}
 %
 where $\delta^{2}_{Q}(U, U')= |Q' - Q|^{2}$ is the squared topological
-charge difference between the initial and proposal configurations.
+charge (see~\ref{subsec:topological_charge}) difference between the initial and proposal configurations.
 
 \section{\label{sec:results}Results}
 %
@@ -606,9 +619,67 @@ charge difference between the initial and proposal configurations.
 %  \caption{\label{subfig:pdiff}Absolute difference in the average plaquette $\left|\delta U_{\mu\nu}\right|^{2}$ between HMC and the trained model.}
 %\end{figure}
 
-
 \section{\label{sec:conclusion}Conclusion}
 \textcolor{red}{TODO}
+
+\appendix
+
+\section{\label{appendix}Appendix}
+
+\subsection{\label{subsec:force_term}Force Term}
+
+It can be shown~\cite{TODO}, that the force term can be written as
+\begin{equation}
+    F = \frac{d S}{dQ} = - \frac{1}{\lambda^{2}} \sum_{k} \lambda^{k} \, \mathrm{Tr}\left[ i \left(UA - A^{\dagger}U^{\dagger}\right) \lambda^{k} \right]
+\end{equation}
+%
+where $A$ is the sum over staples
+%
+\begin{align}
+A = \sum_{\mu\neq\nu}& U_{\mu}(x +\hat{\mu})\, U^{\dagger}_{\mu}(x + \hat{\nu}) \, U^{\dagger}_{\nu}(x) \\ 
+&+ \sum_{\mu\neq\nu} U_{-\nu}(x + \hat{\mu})\, U^{\dagger}_{\mu}(x - \hat{\nu})\, U^{\dagger}_{-\nu}(x).
+\end{align}
+%
+Since, $i\left(UA - A^{\dagger}U^{\dagger}\right) \in \mathfrak{su}(3)$,
+we can write it in terms of the generators $\lambda^{k}$ as
+%
+\begin{align}
+    \sum_{k} \lambda^{k} \,\mathrm{Tr}\left[ \lambda^{k} \sum_{j} c_{j}\, \lambda^{j}\right] &= \sum_{k}\sum_{j} c_{j}\, \lambda^{j} \,\mathrm{Tr}\left[ \lambda^{k} \, \lambda^{j}\right] \\
+    &= \frac{1}{2}\sum_{k}\sum_{j} c_{j}\, t^{k}\, \delta_{jk} \\
+    &= \frac{1}{2}\sum_{k} c_{k} \, t^{k}
+\end{align}
+%
+consequently, we can simplify the force term as
+%
+\begin{equation}
+    F[U] = \frac{dS}{dW} = - \frac{1}{2g^{2}}\, i \, \left(UA - A^{\dagger}U^{\dagger}\right).
+\end{equation}
+%
+
+\subsection{\label{subsec:topological_charge}Topological Charge \texorpdfstring{$Q$}{Q}}
+%
+In lattice field theory, the topological charge $Q$ is defined as the 4D
+integral over spacetime of the topological charge density $q$.
+%
+In the continuum,
+%
+\begin{align}
+    Q &= \int d^{4}x q(x), \text{ where } \\
+    q(x) &= \frac{1}{32\pi^{2}} \epsilon_{\mu\nu\rho\lambda} \mathrm{Tr}\left\{ F_{\mu\nu} F_{\rho\lambda} \right\}
+\end{align}
+%
+On the lattice, we choose a discretization\footnote{We are free to choose a specific discretization as long as it gives the right continuum limit} $q_{L}(x)$ such that
+$Q = a^{4} \sum_{x} q_{L}(x)$.
+%
+The most obvious discretization of $q_{L}$ uses the $1\times1$ plaquette
+$P_{\mu\nu}(x)$, and can be written as
+%
+\begin{equation}
+    q^{\mathrm{plaq}}_{L}(x) = \frac{1}{32\pi^{2}} \epsilon_{\mu\nu\rho\lambda} \mathrm{Tr}\left\{P_{\mu\nu}(x) P_{\rho\lambda}(x)\right\}
+\end{equation}
+%
+this has the advantage of being computationally inexpensive, but leads
+to lattice artifacts of order $\mathcal{O}(a^{2})$.
 
 
 \clearpage
