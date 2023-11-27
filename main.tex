@@ -56,17 +56,21 @@
 \definecolor{myPurple}{HTML}{AE81FF}
 \definecolor{newgreen}{HTML}{51C569}
 \definecolor{newlightblue}{HTML}{71C8A7}
-\definecolor{linkblue}{HTML}{0282CA}
-\definecolor{linkblue1}{HTML}{2196F3}
+%\definecolor{linkblue}{HTML}{0282CA}
+%\definecolor{linkblue1}{HTML}{2196F3}
 \definecolor{awesome}{HTML}{FF2052}
 \definecolor{myPeriwinkle}{HTML}{8075E6} % {8e82fe}
 \definecolor{darkviolet}{rgb}{0.58, 0.0, 0.83}
-%{448AFF}
+\definecolor{linkPurple}{HTML}{8A00A6}
+\definecolor{sfblue}{HTML}{027FFF}
+\definecolor{sfteal}{HTML}{02B386}
+\definecolor{sfgreen}{HTML}{44CF6E}  %{36CE5E}  %4CAF50}  %{4BA628}
+\definecolor{sfpurple}{HTML}{AB47BD}
 \hypersetup{
   colorlinks=true,
   urlcolor=newblue,
   linkcolor=awesome,
-  citecolor=newpurple,
+  citecolor=sfpurple,
 }
 
 %\usepackage[dvipsnames]{xcolor}
@@ -207,10 +211,10 @@ distributed according to our target distribution $\pi(x)$.
 %
 This can be done by sequentially constructing a chain of states:
 %
-\begin{wrapfigure}[21]{l}{0.33\textwidth}
+\begin{wrapfigure}[21]{l}{0.40\textwidth}
   \begin{center}
-  \includegraphics[width=\linewidth]{assets/hmc-update10.pdf}
-  \caption{\label{fig:hmc-update}Illustration of the leapfrog update for HMC.}
+  \caption{\label{fig:hmc-update}Leapfrog update}
+  \includegraphics[width=\linewidth]{assets/hmc-update11.pdf}
   \end{center}
 \end{wrapfigure}
 %
@@ -360,9 +364,9 @@ v'' &= \Gamma_{\theta}(x'', v')
     \end{itemize}
 \end{enumerate}
 %
-\subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
+\section{\label{sec:lgt}Lattice Gauge Theories}
 %
-\begin{wrapfigure}[10]{r}{0.54\textwidth}
+\begin{wrapfigure}[11]{r}{0.55\textwidth}
   \begin{center}
     \caption{\label{fig:lattice}Illustration of the lattice}
     \includegraphics[width=0.54\textwidth]{assets/lattice-horizontal1.pdf}
@@ -370,7 +374,50 @@ v'' &= \Gamma_{\theta}(x'', v')
   \label{fig:lattice}
 \end{wrapfigure}
 %
-Write link variables $U_{\mu}(n) \in SU(3)$:
+\subsection{\label{subsec:2dU1}2D \texorpdfstring{$U(1)$}{U(1)} Model}
+%
+We build upon the approach originally introduced in~\cite{levy_generalizing_2018}, which was successfully applied to the 2D $U(1)$ lattice gauge model in~\cite{foreman_learning_2019,foreman_deep_2021,foreman_leapfroglayers_2022}.
+%
+In particular, we are interested in measuring the (scalar) topological charge
+$Q \in \mathbb{Z}$ on the lattice.
+%
+Since different lattice configurations with the same value of $Q$ are related
+by a gauge transformation, they do not meaningfully contribute to our
+statistics.
+%
+\begin{wrapfigure}[21]{l}{0.47\textwidth}
+  \begin{center}
+  \caption{\label{fig:csd}$\delta Q \rightarrow 0$ with increasing $\beta$ for the 2D $U(1)$ model. Image from~\cite{foreman_leapfroglayers_2022}.}
+  \includegraphics[width=\linewidth]{assets/csd1}
+  \end{center}
+\end{wrapfigure}
+%
+Because of this, we would like to generate configurations from different
+\textit{topological sectors}\footnote{Characterized by different values of $Q$}
+to reduce uncertainty in our statistical estimates.
+
+By repeating this procedure at increasing spatial resolution\footnote{Here $a$ is the lattice spacing} ($\beta \propto 1
+/ a$), we are able to extrapolate our
+estimates to the continuum limit where they can be compared with experimental
+measurements.
+%
+Current approaches such as HMC are known to suffer from auto-correlation times
+which scale exponentially in this limit, significantly limiting their
+effectiveness.
+%
+This phenomenon can be seen in Fig~\ref{fig:csd}, where fluctuations in the
+topological charge between sequential configurations $\delta Q = |Q^{i + 1} - Q^{i}|$ decreases as $\beta = 2
+\rightarrow 3 \rightarrow \cdots$, and disappear completely ($Q =
+\mathrm{const.}$) by $\beta = 7$.
+%
+% Here we are interested in generating an ensemble of configurations on which we
+% will calculate physical quantities of interest . As we calculate these
+% quantities over increasingly many lattice configurations, we are able 
+%
+
+\subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
+%
+We would like to generalize this approach to handle 4D $SU(3)$ link variables $U_{\mu}(n) \in SU(3)$:
 %
 \begin{align}
 U_{\mu}(n) &= \exp\left[i \omega_{\mu}^{k}(n) \lambda^{k} \right] \\
@@ -391,45 +438,6 @@ where
     U_{\mu\nu}(n) = U_{\mu}(n) U_{\nu}(n + \hat{\mu}) U_{\mu}^{\dagger}(n + \hat{\nu}) U^{\dagger}_{\nu}(n).
 \end{equation}
 %
-In particular, we are interested in measuring the (scalar) topological charge
-$Q$ on the lattice.
-%
-Since different lattice configurations with the same value of $Q$ are related
-by a gauge transformation, they do not meaningfully contribute to our
-statistics.
-%
-Because of this, we would like to generate configurations from different
-\textit{topological sectors}\footnote{Characterized by different values of $Q$}
-to reduce uncertainty in our statistical estimates.
-%
-By repeating this procedure at increasing spatial resolution\footnote{Here $a$ is the lattice spacing} ($\beta \propto 1
-/ a$), we are able to extrapolate our
-estimates to the continuum limit where they can be compared with experimental
-measurements.
-
-\begin{wrapfigure}[23]{l}{0.47\textwidth}
-  \begin{center}
-  \caption{\label{fig:csd}$\delta Q \rightarrow 0$ with increasing $\beta$ for the 2D $U(1)$ model. Image from~\cite{foreman_leapfroglayers_2022}.}
-  \includegraphics[width=\linewidth]{assets/csd1}
-  \end{center}
-\end{wrapfigure}
-%
-
-Current approaches (HMC, ...) are known to suffer from auto-correlation times
-which scale exponentially in this limit, significantly limiting their
-effectiveness.
-%
-
-This phenomenon can be seen in Fig~\ref{fig:csd}, where fluctuations in the
-topological charge $\delta Q = |Q^{i + 1} - Q^{i}|$ decreases as $\beta = 2
-\rightarrow 3 \rightarrow \cdots$, and disappear completely ($Q =
-\mathrm{const.}$) by $\beta = 7$.
-%
-% Here we are interested in generating an ensemble of configurations on which we
-% will calculate physical quantities of interest . As we calculate these
-% quantities over increasingly many lattice configurations, we are able 
-%
-
 \subsection{\label{subsec:hmc-4dSU3}Generic MD Updates}
 %
 As before, we introduce momenta $P_{\mu}(n) = P^{k}_{\mu}(n) \lambda^{k}$
@@ -590,6 +598,23 @@ where $\delta^{2}_{Q}(U, U')= |Q' - Q|^{2}$ is the squared topological
 charge (see~\ref{subsec:topological_charge}) difference between the initial and proposal configurations.
 
 \section{\label{sec:results}Results}
+%
+\begin{figure}[htpb!]
+    \centering
+    \hfill
+    \begin{subfigure}{0.55\textwidth}
+        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot2.svg}
+        \includesvg[width=\textwidth]{assets/dQint_hist.svg}
+        \caption{\label{subfig:dqhist}$\delta Q$ for trained 2D $U(1)$ model (blue) vs HMC (red).}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.35\textwidth}
+        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
+        \includesvg[width=\textwidth]{assets/logdet.svg}
+        \caption{\label{subfig:logdet2du1}$|\mathcal{J}|$ vs LF step.}
+    \end{subfigure}
+    \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model showing increasing $|\mathcal{J}|$ towards the middle of the trajectory (left), resulting in improved tunneling rate ($\delta Q$) (right) }
+\end{figure}
 %
 \begin{figure}[htpb!]
     \centering
