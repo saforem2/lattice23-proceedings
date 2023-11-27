@@ -66,11 +66,16 @@
 \definecolor{sfteal}{HTML}{02B386}
 \definecolor{sfgreen}{HTML}{44CF6E}  %{36CE5E}  %4CAF50}  %{4BA628}
 \definecolor{sfpurple}{HTML}{AB47BD}
+\definecolor{sam}{RGB}{28, 28, 28}
+\definecolor{myPink}{HTML}{EC407A}
+\definecolor{myOrange}{HTML}{FFA726}
+\definecolor{myGreen}{HTML}{66BB6A}
+\definecolor{lfPurple}{HTML}{AB47BC}
 \hypersetup{
   colorlinks=true,
   urlcolor=newblue,
   linkcolor=awesome,
-  citecolor=sfpurple,
+  citecolor=lfPurple,
 }
 
 %\usepackage[dvipsnames]{xcolor}
@@ -123,16 +128,12 @@
 \newcommandx{\fix}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
 
 \newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
-\definecolor{sam}{RGB}{28, 28, 28}
 \newcommand{\sam}[1]{{\textcolor{sam}{[Sam] #1}}}
 
 %\definecolor{myOrange}{RGB}{36,85,100}
 %\definecolor{myorange}{RGB}{219, 48, 122}
 
 \newcommand{\update}[1]{{\textcolor{red}{#1}}}
-
-\definecolor{myPink}{HTML}{EC407A}
-\definecolor{myOrange}{HTML}{FFA726}
 
 \linenumbers
 
@@ -154,11 +155,11 @@
 \emailAdd{osborn@alcf.anl.gov}
 
 \abstract{%
-  We present a trainable framework for efficiently generating gauge
-configurations, and discss ongoing work in this direction. In particular, we
-consider the problem of sampling configurations from a 4D $SU(3)$ lattice gauge
-theory, and consider a generalized leapfrog integrator in the molecular
-dynamics update that can be trained to improve sampling efficiency.%
+We present a trainable framework for efficiently generating gauge
+configurations, and discuss ongoing work in this direction.
+%
+In particular, we consider the problem of sampling configurations from a 4D $SU(3)$ lattice gauge theory, and consider a generalized leapfrog integrator in the molecular dynamics update that can be trained to improve sampling efficiency.
+%
 }
 
 \FullConference{The 40th International Symposium on Lattice Field Theory (Lattice 2023)\\
@@ -172,9 +173,7 @@ Fermi National Accelerator Laboratory\\}
 
 \tableofcontents
 
-\section{\label{sec:intro}Introduction}
-
-\section{\label{sec:background}Background}
+\section{\label{sec:background}Introduction}
 
 We would like to calculate observables $\mathcal{O}$:
 %
@@ -211,12 +210,12 @@ distributed according to our target distribution $\pi(x)$.
 %
 This can be done by sequentially constructing a chain of states:
 %
-\begin{wrapfigure}[21]{l}{0.40\textwidth}
-  \begin{center}
-  \caption{\label{fig:hmc-update}Leapfrog update}
-  \includegraphics[width=\linewidth]{assets/hmc-update11.pdf}
-  \end{center}
-\end{wrapfigure}
+%\begin{wrapfigure}[21]{l}{0.40\textwidth}
+%  \begin{center}
+%  \includegraphics[width=\linewidth]{assets/hmc-update11.pdf}
+%  \caption{\label{fig:hmc-update}Leapfrog update.}
+%  \end{center}
+%\end{wrapfigure}
 %
 \begin{equation}
 x_{0} \rightarrow x_{1} \rightarrow x_{i} \rightarrow \cdots \rightarrow x_{n}
@@ -236,8 +235,7 @@ We can write the joint distribution $\pi(x, v)$ as
 %
 \begin{align}
 \pi(x, v) &= \pi(x) \pi(v) \propto e^{-S(x)} e^{-\frac{1}{2} v^{T}v} \\
-&= e^{-\left[S(x) + \frac{1}{2} v^{T} v \right]} \\
-&= e^{-H(x, v)}
+&= e^{-\left[S(x) + \frac{1}{2} v^{T} v \right]}
 \end{align}
 %
 We can evolve the Hamiltonian dynamics of the $(\dot{x}, \dot{v}) =
@@ -271,14 +269,12 @@ A(x'|x) = \mathrm{min}\left\{{1, \frac{\pi(x')}{\pi(x)} \left| \frac{\partial x'
 %
 \section{\label{sec:method}Method}
 %
-\begin{wrapfigure}[22]{r}{0.5\textwidth}
-  \begin{center}
-  %\vspace{-25pt}
-    %\includegraphics[width=\linewidth]{assets/leapfrog-layer-alt-2.pdf}
-    \includegraphics[width=\linewidth]{assets/leapfrog-layer.drawio.pdf}
+\begin{wrapfigure}[19]{r}{0.42\textwidth}
+    \begin{center}
+        \caption{\label{fig:lf-layer}Generalized MD update.} 
+        %\texttt{leapfrog layer}: (x, v) \rightarrow (x'', v'')$.}
+        \includegraphics[width=\linewidth]{assets/leapfrog-layer.drawio.pdf}
   \end{center}
-  \caption{\label{fig:lf-layer}Illustration of the generalized MD update
-  $\texttt{leapfrog layer}: (x, v) \rightarrow (x'', v'')$.}
 \end{wrapfigure}
 %
 Unfortunately, HMC is known to suffer from long auto-correlations and often
@@ -286,15 +282,15 @@ struggles with multi-modal target densities.
 %
 To combat this, we propose building on the approach from~\cite{foreman_learning_2019,foreman_deep_2021,foreman_leapfroglayers_2022}. 
 %
-We introduce two (invertible) neural networks (\texttt{xNet}, \texttt{vNet}):
+We introduce two (invertible) neural networks $\texttt{xNet}: (x, v) \rightarrow (\alpha_{x}, \beta_{x}, \gamma_{x})$, $\texttt{vNet}: (x, F) \rightarrow (\alpha_{v}, \beta_{v}, \gamma_{v})$.
 %
-\begin{align}
-\texttt{vNet}&: (x, F) \rightarrow (\alpha_{v}, \beta_{v}, \gamma_{v}) \\
-\texttt{xNet}&: (x, v) \rightarrow (\alpha_{x}, \beta_{x}, \gamma_{x})
-\end{align}
+%\begin{align}
+%\texttt{vNet}&: (x, F) \rightarrow (\alpha_{v}, \beta_{v}, \gamma_{v}) \\
+%\texttt{xNet}&: (x, v) \rightarrow (\alpha_{x}, \beta_{x}, \gamma_{x})
+%\end{align}
 %
-where $\left(\alpha, \beta, \gamma\right)$ are all of the same dimensionality as $x$ and $v$, and are
-parameterized by a set of weights $\theta$.
+
+Here, $\left(\alpha, \beta, \gamma\right)$ are all of the same dimensionality as $x$ and $v$, and are parameterized by a set of weights $\theta$.
 %
 These network outputs $(\alpha, \beta, \gamma)$ are then used in a generalized MD update (as
 shown in Fig~\ref{fig:lf-layer}) via:
@@ -317,10 +313,10 @@ To ensure that our proposed update remains reversible, we split the $x$ update
 into two sub-updates on complementary subsets ($x = x_{A} \cup x_{B}$):
 %
 \begin{align}
-v' &= \Gamma_{\theta}(x, v) \\
-x' &= x_{B} + \Lambda_{\theta}(x_{A}, v') \\
-x'' &= x'_{A} + \Lambda_{\theta}(x'_{B}, v') \\
-v'' &= \Gamma_{\theta}(x'', v')
+    {v'} &= {\Gamma_{\theta}(x, v)} \\
+    {x'} &= x_{B} + {\Lambda_{\theta}(x_{A}, v')} \\
+    {x''} &= x'_{A} + {\Lambda_{\theta}(x'_{B}, v')} \\
+    {v''} &= {\Gamma_{\theta}(x'', v')}
 \end{align}
 %
 %where $v_{0} \sim \mathcal{N}(0, 1)$ is re-sampled at the beginning of each trajectory and projected away at the end to obtain the proposal state $x'$.
@@ -366,13 +362,20 @@ v'' &= \Gamma_{\theta}(x'', v')
 %
 \section{\label{sec:lgt}Lattice Gauge Theories}
 %
-\begin{wrapfigure}[11]{r}{0.55\textwidth}
+\begin{wrapfigure}[21]{R}{0.42\textwidth}
   \begin{center}
-    \caption{\label{fig:lattice}Illustration of the lattice}
-    \includegraphics[width=0.54\textwidth]{assets/lattice-horizontal1.pdf}
+  \caption{\label{fig:csd}$\delta Q \rightarrow 0$ with increasing $\beta$ for the 2D $U(1)$ model. Image from~\cite{foreman_leapfroglayers_2022}.}
+  \includegraphics[width=\linewidth]{assets/csd1}
   \end{center}
-  \label{fig:lattice}
 \end{wrapfigure}
+%
+%\begin{wrapfigure}[11]{r}{0.55\textwidth}
+%  \begin{center}
+%    \caption{\label{fig:lattice}Illustration of the lattice\fix{cut to free up space}.}
+%    \includegraphics[width=0.54\textwidth]{assets/lattice-horizontal1.pdf}
+%  \end{center}
+%  \label{fig:lattice}
+%\end{wrapfigure}
 %
 \subsection{\label{subsec:2dU1}2D \texorpdfstring{$U(1)$}{U(1)} Model}
 %
@@ -385,18 +388,12 @@ Since different lattice configurations with the same value of $Q$ are related
 by a gauge transformation, they do not meaningfully contribute to our
 statistics.
 %
-\begin{wrapfigure}[21]{l}{0.47\textwidth}
-  \begin{center}
-  \caption{\label{fig:csd}$\delta Q \rightarrow 0$ with increasing $\beta$ for the 2D $U(1)$ model. Image from~\cite{foreman_leapfroglayers_2022}.}
-  \includegraphics[width=\linewidth]{assets/csd1}
-  \end{center}
-\end{wrapfigure}
-%
-Because of this, we would like to generate configurations from different
-\textit{topological sectors}\footnote{Characterized by different values of $Q$}
-to reduce uncertainty in our statistical estimates.
 
-By repeating this procedure at increasing spatial resolution\footnote{Here $a$ is the lattice spacing} ($\beta \propto 1
+Because of this, we would like to generate configurations from different
+\textit{topological sectors}\footnote{Characterized by different values of $Q$.}
+to reduce uncertainty in our statistical estimates.
+%
+By repeating this procedure at increasing spatial resolution\footnote{Here $a$ is the lattice spacing.} ($\beta \propto 1
 / a$), we are able to extrapolate our
 estimates to the continuum limit where they can be compared with experimental
 measurements.
@@ -406,7 +403,7 @@ which scale exponentially in this limit, significantly limiting their
 effectiveness.
 %
 This phenomenon can be seen in Fig~\ref{fig:csd}, where fluctuations in the
-topological charge between sequential configurations $\delta Q = |Q^{i + 1} - Q^{i}|$ decreases as $\beta = 2
+topological charge between sequential configurations (the \emph{tunneling rate}) $\delta Q = |Q^{i + 1} - Q^{i}|$ decreases as $\beta= 2
 \rightarrow 3 \rightarrow \cdots$, and disappear completely ($Q =
 \mathrm{const.}$) by $\beta = 7$.
 %
@@ -414,7 +411,27 @@ topological charge between sequential configurations $\delta Q = |Q^{i + 1} - Q^
 % will calculate physical quantities of interest . As we calculate these
 % quantities over increasingly many lattice configurations, we are able 
 %
-
+%\subsection{\label{subsec:2dU1-appendix}2D \texorpdfstring{$U(1)$}{U(1)} Results}
+%
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
+        \includesvg[width=\textwidth]{assets/logdet.svg}
+        \caption{\label{subfig:logdet2dU1}$|\mathcal{J}|$ vs LF step.}
+    \end{subfigure}
+    %
+    \hfill
+    %
+    \begin{subfigure}{0.5\textwidth}
+        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot2.svg}
+        \includesvg[width=\textwidth]{assets/dQint_hist.svg}
+        \caption{\label{subfig:dqhist}$\delta Q$ for trained model (blue) vs HMC (red).}
+    \end{subfigure}
+    %
+    \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model at $\beta = 4$ showing increasing $|\mathcal{J}|$ towards the middle of the trajectory (left), resulting in improved tunneling rate ($\delta Q$) (right).}
+\end{figure}
+%
 \subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
 %
 We would like to generalize this approach to handle 4D $SU(3)$ link variables $U_{\mu}(n) \in SU(3)$:
@@ -429,39 +446,35 @@ of $SU(3)$.
 %
 We consider the standard Wilson gauge action
 %
-\begin{equation}
-S_{G} = -\frac{\beta}{6}\sum \mathrm{Tr}\left[U_{\mu\nu}(n) + U^{\dagger}_{\mu\nu}(n) \right]
-\end{equation}
-%
-where 
-\begin{equation}
-    U_{\mu\nu}(n) = U_{\mu}(n) U_{\nu}(n + \hat{\mu}) U_{\mu}^{\dagger}(n + \hat{\nu}) U^{\dagger}_{\nu}(n).
-\end{equation}
+\begin{align}
+S_{G} &= -\frac{\beta}{6}\sum \mathrm{Tr}\left[U_{\mu\nu}(n) + U^{\dagger}_{\mu\nu}(n) \right],\quad\text{where} \\
+U_{\mu\nu}(n) &= U_{\mu}(n) U_{\nu}(n + \hat{\mu}) U_{\mu}^{\dagger}(n + \hat{\nu}) U^{\dagger}_{\nu}(n).
+\end{align}
 %
 \subsection{\label{subsec:hmc-4dSU3}Generic MD Updates}
 %
 As before, we introduce momenta $P_{\mu}(n) = P^{k}_{\mu}(n) \lambda^{k}$
 conjugate to the real fields $\omega_{\mu}^{k}(n)$.
-
 %
 We can write the Hamiltonian as
 %
 \begin{equation}
-    H[P, U] = \frac{1}{2} P^{2} + S_{G}[U]
+    H[P, U] = \frac{1}{2} P^{2} + S_{G}[U] \Longrightarrow
+    \Aoutlineboxed[myGreen]{\frac{d\omega^{k}}{dt} = \frac{\partial H}{\partial P^{k}}},
+    \quad \Aoutlineboxed[lfPurple]{\frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}}.
 \end{equation}
 %
-by Hamilton's equations
+%By Hamilton's equations
+%
+%\begin{equation}
+%\frac{d\omega^{k}}{dt} = \frac{\partial H}{\partial P^{k}},
+%\quad \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}.
+%\end{equation}
+%
+To update the gauge field $U_{\mu} = e^{i\omega_{\mu}^{k} \lambda^{k}}$, write,
 %
 \begin{equation}
-\frac{d\omega^{k}}{dt} = \frac{\partial H}{\partial P^{k}},
-\quad \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}.
-\end{equation}
-%
-
-To update the gauge field $U_{\mu} = e^{i\omega_{\mu}^{k} \lambda^{k}}$,
-%
-\begin{equation}
-    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} \Longrightarrow \frac{dW}{dt} = P.
+    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} \Longrightarrow \Aoutlineboxed[myGreen]{\frac{dW}{dt} = P}.
 \end{equation}
 %
 %\begin{LTXexample}[text outside listing,lefthand width=1in]
@@ -479,26 +492,25 @@ Discretizing with step size $\varepsilon$,
     W(\varepsilon) &= W(0) + \varepsilon P(0) \Longrightarrow \\
     -i \log U(\varepsilon) &= - i \log U(0) + \varepsilon P(0) \\
     U(\varepsilon) &= e^{i \varepsilon P(0)} U(0) \Longrightarrow \\
-    \Aoutlineboxed[myOrange]{\Lambda: U \rightarrow U' &= e^{i \varepsilon P} U}
+    \Aoutlineboxed[myOrange]{\Lambda: U \rightarrow U' &= e^{i \varepsilon P} U}.
 \end{align}
-
+%
 Similarly for the momentum update,
 %
 \begin{align}
-    \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}} &= - \frac{\partial H}{\partial W} = - \frac{dS}{dW} \Longrightarrow \\
+    \Aoutlineboxed[lfPurple]{\frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}&} = - \frac{\partial H}{\partial W} = - \frac{dS}{dW} \Longrightarrow \\
     P(\varepsilon) &= P(0) - \varepsilon \left.\frac{dS}{dW}\right|_{t=0} = P(0) - \varepsilon F[U]\\
     \Aoutlineboxed[myPink]{\Gamma: P \rightarrow P' &= P - \frac{\varepsilon}{2} F[U]}
 \end{align}
 %
 where $F[U] = \frac{dS}{dW}$ is the force term (see~\ref{subsec:force_term}).
 %
-
-Finally, we can express the full HMC updates as:
+%Finally, we can express the full HMC updates as:
 %
-\begin{align}
-    \Aoutlineboxed[myPink]{\Gamma&}: P \longrightarrow P' \coloneqq P - \varepsilon F[U] \quad \texttt{(momentum update)}\\
-    \Aoutlineboxed[myOrange]{\Lambda&}: U \longrightarrow U' \coloneqq e^{i \varepsilon P} \quad \quad \quad \,\,\,\, \texttt{(link update)}
-\end{align}
+%\begin{align}
+%    \Aoutlineboxed[myPink]{\Gamma&}: P \longrightarrow P' \coloneqq P - \varepsilon F[U] \quad \texttt{(momentum update)}\\
+%    \Aoutlineboxed[myOrange]{\Lambda&}: U \longrightarrow U' \coloneqq e^{i \varepsilon P} \quad \quad \quad \,\,\,\, \texttt{(link update)}
+%\end{align}
 %\begin{enumerate}
 %    \item{Momentum update: $\Gamma: P \rightarrow P - \varepsilon\, F[U]$}
 %    \item{Gauge link update: $\Lambda: U \rightarrow e^{i\varepsilon P}U$}
@@ -507,10 +519,10 @@ Finally, we can express the full HMC updates as:
 \subsection{\label{subsec:generalized-md-4dSU3}Generalized MD Update}
 As in Sec.\ref{sec:method}, we introduce \texttt{pNet}: $(U, F) \rightarrow \left(\alpha_{P}, \beta_{P},
 %
-\gamma_{P}\right)$ and \texttt{uNet}: $(U, P) \rightarrow \left(\,\cdot\,, \beta_{U}, \gamma_{U}\right)$.
+\gamma_{P}\right)$ and \texttt{uNet}: $(U, P) \rightarrow \left(\,\cdot\,, \beta_{U}, \gamma_{U}\right)$\footnote{Note that we have omitted the $U$ scaling term ($\alpha_{U}$) term in this update since $U \in SU(3)$}.
 %
 
-In terms of the generalized update operators
+In terms of the generalized update operators,
 %
 \begin{align}
     \Aoutlineboxed[myPink]{\Gamma^{\pm}_{\theta}&}: (U, P) \xrightarrow[]{\left(\alpha_{P}, \beta_{P}, \gamma_{P}\right)} (U, P') \\
@@ -529,19 +541,18 @@ we can write the complete update:
 
 \subsection{\label{sec:momentum-update}Momentum Update}
 %
-In this case, our $\texttt{vNet}: (U, F) = (e^{iW}, F) \rightarrow (\alpha_{P},
+In this case, our $\texttt{pNet}: (U, F) = (e^{iW}, F) \rightarrow (\alpha_{P},
 \beta_{P}, \gamma_{P})$.
 %
-We can use this in the momentum update $\Gamma^{\pm}_{\theta}: (U, P) \rightarrow P^{\pm}$
-via\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e.
-$\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U,
-F)\right] = (U, F)$, and similarly for $\Lambda^{\pm}$}:
+We can write the generalized momentum update as $P^{\pm} \coloneqq \Gamma_{\theta}^{\pm}(U, P)$, where\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e. $\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U, F)\right] = (U, F)$, and similarly for $\Lambda^{\pm}$}:
+%We can use this in the momentum update , $\Gamma^{\pm}_{\theta}: (U, P) \rightarrow P^{\pm}$
+%via:
 %
-\begin{equation}
-    P^{\pm} \coloneqq \Gamma_{\theta}^{\pm}(U, P),
-\end{equation}
+%\begin{equation}
+%    P^{\pm} \coloneqq \Gamma_{\theta}^{\pm}(U, P),
+%\end{equation}
 %
-where:
+%where:
 %
 \begin{enumerate}
     \item \texttt{forward}, $(+)$:
@@ -554,23 +565,29 @@ where:
     \end{equation}
 \end{enumerate}
 %
-By introducing the above modifications, we incur a factor of
-
-\begin{equation}
-    \log\left|\frac{\partial P^{\pm}}{\partial P}\right| = \, \pm \, \frac{\varepsilon}{2}\sum \alpha_{P}
-\end{equation}
+By introducing the above modifications, we incur a factor of 
+%
+$\log\left|\frac{\partial P^{\pm}}{\partial P}\right| = \, \pm \, \frac{\varepsilon}{2}\sum \alpha_{P}$
 %
 in the Metropolis Hastings accept / reject $A(U'|U)$, and the sum is taken over the full trajectory.
 %
 \subsection{\label{subsec:gauge-update}Link Update}
 %
-Similarly to the momentum update, the outputs from our $\texttt{uNet}: (U, P) \rightarrow \left(\, \cdot\,, \beta_{U}, \gamma_{U}\right)$ in the generalized link update $\Lambda^{\pm}_{\theta}: (U, P) \rightarrow U^{\pm}$
+Similarly to the momentum update, the outputs from our 
 %
-\begin{equation}
-  U^{\pm} \coloneqq \Lambda^{\pm}(U, P) = e^{i\varepsilon \tilde{P}^{\pm}} U
-\end{equation}
+$\texttt{uNet}: (U, P) \rightarrow \left(\, \cdot\,, \beta_{U}, \gamma_{U}\right)$
 %
-where $\tilde{P}^{\pm} \in \mathfrak{su(3)}$. Explicitly:
+are used in the generalized link update $U^{\pm} \coloneqq \Lambda^{\pm}(U, P) = e^{i\varepsilon \tilde{P}^{\pm}} U$
+%$\Lambda^{\pm}_{\theta}: (U, P) \rightarrow U^{\pm}$
+%
+%\begin{equation}
+%  U^{\pm} \coloneqq \Lambda^{\pm}(U, P) = e^{i\varepsilon \tilde{P}^{\pm}} U
+%\end{equation}
+%
+(where $\tilde{P}^{\pm} \in \mathfrak{su(3)}$).
+%
+Explicitly:
+%
 \begin{enumerate}
 \item \texttt{forward}, $(+)$:
     \begin{equation}
@@ -599,43 +616,33 @@ charge (see~\ref{subsec:topological_charge}) difference between the initial and 
 
 \section{\label{sec:results}Results}
 %
-\begin{figure}[htpb!]
-    \centering
-    \hfill
-    \begin{subfigure}{0.55\textwidth}
-        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot2.svg}
-        \includesvg[width=\textwidth]{assets/dQint_hist.svg}
-        \caption{\label{subfig:dqhist}$\delta Q$ for trained 2D $U(1)$ model (blue) vs HMC (red).}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.35\textwidth}
-        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
-        \includesvg[width=\textwidth]{assets/logdet.svg}
-        \caption{\label{subfig:logdet2du1}$|\mathcal{J}|$ vs LF step.}
-    \end{subfigure}
-    \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model showing increasing $|\mathcal{J}|$ towards the middle of the trajectory (left), resulting in improved tunneling rate ($\delta Q$) (right) }
-\end{figure}
+For the trained 2D $U(1)$ model (Fig~\ref{fig:2dU1}), we see in Fig~\ref{subfig:logdet2dU1} that 
+%
+$\left|\mathcal{J}\right|$
+%
+increases towards the middle of the trajectory, allowing for the sampler to overcome the large energy barriers between different topological sectors.
+%
+This results in a greater \emph{tunneling rate} ($\delta Q$) when compared to generic HMC.
+%
+Identical behavior is observed after a short training run for the 4D $SU(3)$ model, as shown in Fig~\ref{fig:logdet}.
 %
 \begin{figure}[htpb!]
     \centering
     \begin{subfigure}{0.31\textwidth}
-        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
         \includegraphics[width=\textwidth]{assets/logdet-1.pdf}
-        \caption{\label{subfig:logdet1} 100 train iters}
+        \caption{\label{subfig:logdet1} 100 train steps}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.31\textwidth}
-        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot2.svg}
         \includegraphics[width=\textwidth]{assets/logdet-2.pdf}
-        \caption{\label{subfig:logdet2} 500 train iters}
+        \caption{\label{subfig:logdet2} 500 train steps}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.31\textwidth}
-        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot3.svg}
         \includegraphics[width=\textwidth]{assets/logdet-3.pdf}
-        \caption{\label{subfig:logdet3} 1000 train iters}
+        \caption{\label{subfig:logdet3} 1000 train steps}
     \end{subfigure}
-    \caption{\label{fig:logdet}Evolution of $\left|\mathcal{J}\right|$ vs $N_{\mathrm{LF}}$ (\texttt{logdet}) during the first 1000 training iterations.}
+    \caption{\label{fig:logdet}Evolution of $\left|\mathcal{J}\right|$ during the first 1000 training iterations for the 4D $SU(3)$ model.}
 \end{figure}
 %
 %As a check on our model, we compare the average plaquette between the Fig~\fig{fig:pdiff} we can see that 
@@ -652,27 +659,61 @@ Note that this is a relatively simple proof of concept demonstrating how to cons
 %
 In a future work we plan to further investigate (and quantify) the cost / benefit when compared to alternative approaches such as traditional HMC and purely generative (OT / KL-Divergence~\cite{albergo_flow-based_2019,albergo_introduction_2021,boyda_sampling_2021,kanwar_equivariant_2020} based approaches.
 %
-Additional items to consider:
-\begin{itemize}
-    \item{Cost of training (+ how this scales with lattice volume, trajectory length, etc)}
-    \item{Better / more flexible transformations}
-    \begin{itemize}
-        \item Gauge equivariant transformations, etc
-    \end{itemize}
-    \item{Transfer learning, training individual kernels}
-\end{itemize}
-
+%Additional items to consider:\fix{Clean up / omit ???}
+%\begin{itemize}
+%    \item{Cost of training (+ how this scales with lattice volume, trajectory length, etc)}
+%    \item{Better / more flexible transformations}
+%    \begin{itemize}
+%        \item Gauge equivariant transformations, etc
+%    \end{itemize}
+%    \item{Transfer learning, training individual kernels}
+%\end{itemize}
+%
 \section{\label{sec:acknowledgements}Acknowledgements}
 This research used resources of the Argonne Leadership Computing Facility,
 which is a DOE Office of Science User Facility supported under Contract DE-AC02-06CH11357.
+%
+This research was supported by the Exascale Computing Project (17-SC-20-SC), a collaborative effort of the U.S. Department of Energy Office of Science and the National Nuclear Security Administration.
+%
+%\clearpage
+%
+\nocite{*}
+%\printbibliography
+\bibliography{references}{}
+\bibliographystyle{abbrvnat}
+%\begin{thebibliography}{99}
+%\bibitem{...}
+%....
+
+%\end{thebibliography}
 
 \appendix
-
+%
 \section{\label{appendix}Appendix}
-
+%
+%\subsection{\label{subsec:2dU1-appendix}2D \texorpdfstring{$U(1)$}{U(1)} Results}
+%
+%\begin{figure}[h]
+%    \centering
+%    \hfill
+%    \begin{subfigure}{0.55\textwidth}
+%        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot2.svg}
+%        \includesvg[width=\textwidth]{assets/dQint_hist.svg}
+%        \caption{\label{subfig:dqhist}$\delta Q$ for trained 2D $U(1)$ model (blue) vs HMC (red).}
+%    \end{subfigure}
+%    \hfill
+%    \begin{subfigure}{0.35\textwidth}
+%        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
+%        \includesvg[width=\textwidth]{assets/logdet.svg}
+%        \caption{\label{subfig:logdet2dU1}$|\mathcal{J}|$ vs LF step.}
+%    \end{subfigure}
+%    \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model showing increasing $|\mathcal{J}|$ towards the middle of the trajectory (left), resulting in improved tunneling rate ($\delta Q$) (right)}
+%\end{figure}
+%
 \subsection{\label{subsec:force_term}Force Term}
 
-It can be shown~\cite{TODO}, that the force term can be written as
+We can write the force term as
+%
 \begin{equation}
     F = \frac{d S}{dQ} = - \frac{1}{\lambda^{2}} \sum_{k} \lambda^{k} \, \mathrm{Tr}\left[ i \left(UA - A^{\dagger}U^{\dagger}\right) \lambda^{k} \right]
 \end{equation}
@@ -726,16 +767,5 @@ this has the advantage of being computationally inexpensive, but leads
 to lattice artifacts of order $\mathcal{O}(a^{2})$.
 
 
-\clearpage
-
-\nocite{*}
-%\printbibliography
-\bibliography{references}{}
-\bibliographystyle{abbrvnat}
-%\begin{thebibliography}{99}
-%\bibitem{...}
-%....
-
-%\end{thebibliography}
 
 \end{document}
