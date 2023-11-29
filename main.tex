@@ -46,26 +46,8 @@
 
 \usepackage{pos}
 
-
-\definecolor{caribbeangreen}{rgb}{0.0, 0.8, 0.6}
-\definecolor{pinkred}{HTML}{FF2052}
-\definecolor{newred}{HTML}{f92672}
 \definecolor{newblue}{HTML}{007fff}
-\definecolor{newdarkblue}{HTML}{0282CA}
-\definecolor{newpurple}{HTML}{CC4FFF}
-\definecolor{myPurple}{HTML}{AE81FF}
-\definecolor{newgreen}{HTML}{51C569}
-\definecolor{newlightblue}{HTML}{71C8A7}
-%\definecolor{linkblue}{HTML}{0282CA}
-%\definecolor{linkblue1}{HTML}{2196F3}
 \definecolor{awesome}{HTML}{FF2052}
-\definecolor{myPeriwinkle}{HTML}{8075E6} % {8e82fe}
-\definecolor{darkviolet}{rgb}{0.58, 0.0, 0.83}
-\definecolor{linkPurple}{HTML}{8A00A6}
-\definecolor{sfblue}{HTML}{027FFF}
-\definecolor{sfteal}{HTML}{02B386}
-\definecolor{sfgreen}{HTML}{44CF6E}  %{36CE5E}  %4CAF50}  %{4BA628}
-\definecolor{sfpurple}{HTML}{AB47BD}
 \definecolor{sam}{RGB}{28, 28, 28}
 \definecolor{myPink}{HTML}{EC407A}
 \definecolor{myOrange}{HTML}{FFA726}
@@ -436,10 +418,10 @@ topological charge between sequential configurations (the \emph{tunneling rate})
 %
 We would like to generalize this approach to handle 4D $SU(3)$ link variables $U_{\mu}(n) \in SU(3)$:
 %
-\begin{align}
-U_{\mu}(n) &= \exp\left[i \omega_{\mu}^{k}(n) \lambda^{k} \right] \\
-&= e^{iW}, \quad W \in \mathfrak{su}(3)
-\end{align}
+\begin{equation}
+U_{\mu}(n) = \exp\left[i \omega_{\mu}^{k}(n) \lambda^{k} \right]
+%&= e^{iW}, \quad W \in \mathfrak{su}(3)
+\end{equation}
 %
 where $\omega_{\mu}^{k}(n) \in \mathbb{R}$ and $\lambda^{k}$ are the generators
 of $SU(3)$.
@@ -471,25 +453,16 @@ We can write the Hamiltonian as
 %\quad \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}.
 %\end{equation}
 %
-To update the gauge field $U_{\mu} = e^{i\omega_{\mu}^{k} \lambda^{k}}$, write,
+To update the gauge field $U_{\mu} = e^{i\omega_{\mu}^{k} \lambda^{k}}$, write
 %
 \begin{equation}
-    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} \Longrightarrow \Aoutlineboxed[myGreen]{\frac{dW}{dt} = P}.
+    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} %\Longrightarrow Aoutlineboxed[myGreen]{\frac{dW}{dt} = P}.
 \end{equation}
-%
-%\begin{LTXexample}[text outside listing,lefthand width=1in]
-%\begin{equation*}
-%    \eqnmarkbox[blue]{node1}{e_q^n}
-%    \eqnmark[red]{node2}{f(x)}
-%    \tikzmarknode{node3}{kT}
-%\end{equation*}
-%\annotate[yshift=1em]{}{node1,node2}{my annotation text}
-%\end{LTXexample}
 %
 Discretizing with step size $\varepsilon$,
 %
 \begin{align}
-    W(\varepsilon) &= W(0) + \varepsilon P(0) \Longrightarrow \\
+    %W(\varepsilon) &= W(0) + \varepsilon P(0) \Longrightarrow \\
     -i \log U(\varepsilon) &= - i \log U(0) + \varepsilon P(0) \\
     U(\varepsilon) &= e^{i \varepsilon P(0)} U(0) \Longrightarrow \\
     \Aoutlineboxed[myOrange]{\Lambda: U \rightarrow U' &= e^{i \varepsilon P} U}.
@@ -498,12 +471,14 @@ Discretizing with step size $\varepsilon$,
 Similarly for the momentum update,
 %
 \begin{align}
-    \Aoutlineboxed[lfPurple]{\frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}&} = - \frac{\partial H}{\partial W} = - \frac{dS}{dW} \Longrightarrow \\
-    P(\varepsilon) &= P(0) - \varepsilon \left.\frac{dS}{dW}\right|_{t=0} = P(0) - \varepsilon F[U]\\
+    \Aoutlineboxed[lfPurple]{\frac{dP^{k}}{dt} &= - \frac{\partial H}{\partial \omega^{k}}} \\
+    %= - \frac{\partial H}{\partial W} = - \frac{dS}{dW} \Longrightarrow \\
+    P(\varepsilon) &= P(0) - \varepsilon F[U]\\
+    %P(0) - \varepsilon \left.\frac{dS}{dW}\right|_{t=0}  = 
     \Aoutlineboxed[myPink]{\Gamma: P \rightarrow P' &= P - \frac{\varepsilon}{2} F[U]}
 \end{align}
 %
-where $F[U] = \frac{dS}{dW}$ is the force term (see~\ref{subsec:force_term}).
+where $F[U]$ is the force term (see~\ref{subsec:force_term}).
 %
 %Finally, we can express the full HMC updates as:
 %
@@ -541,7 +516,7 @@ we can write the complete update:
 
 \subsection{\label{sec:momentum-update}Momentum Update}
 %
-In this case, our $\texttt{pNet}: (U, F) = (e^{iW}, F) \rightarrow (\alpha_{P},
+In this case, our $\texttt{pNet}: (U, F) = (\alpha_{P},
 \beta_{P}, \gamma_{P})$.
 %
 We can write the generalized momentum update as $P^{\pm} \coloneqq \Gamma_{\theta}^{\pm}(U, P)$, where\footnote{Note that $\left(\Gamma^{+}\right)^{-1} = \Gamma^{-}$, i.e. $\Gamma^{+}\left[\Gamma^{-}(U, F)\right] = \Gamma^{-}\left[\Gamma^{+}(U, F)\right] = (U, F)$, and similarly for $\Lambda^{\pm}$}:
@@ -715,7 +690,7 @@ This research was supported by the Exascale Computing Project (17-SC-20-SC), a c
 We can write the force term as
 %
 \begin{equation}
-    F = \frac{d S}{dQ} = - \frac{1}{\lambda^{2}} \sum_{k} \lambda^{k} \, \mathrm{Tr}\left[ i \left(UA - A^{\dagger}U^{\dagger}\right) \lambda^{k} \right]
+    F = - \frac{1}{\lambda^{2}} \sum_{k} \lambda^{k} \, \mathrm{Tr}\left[ i \left(UA - A^{\dagger}U^{\dagger}\right) \lambda^{k} \right]
 \end{equation}
 %
 where $A$ is the sum over staples
@@ -737,7 +712,7 @@ we can write it in terms of the generators $\lambda^{k}$ as
 consequently, we can simplify the force term as
 %
 \begin{equation}
-    F[U] = \frac{dS}{dW} = - \frac{1}{2g^{2}}\, i \, \left(UA - A^{\dagger}U^{\dagger}\right).
+    F[U] = - \frac{1}{2g^{2}}\, i \, \left(UA - A^{\dagger}U^{\dagger}\right).
 \end{equation}
 %
 
