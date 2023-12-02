@@ -395,14 +395,22 @@ topological charge between sequential configurations (the \emph{tunneling rate})
 \begin{figure}[htpb!]
     \centering
     %
-    \begin{subfigure}{0.55\textwidth}
+    \begin{subfigure}{0.65\textwidth}
+        % \includesvg[width=\textwidth]{assets/logdet_ridgeplot2.svg}
+        \includesvg[width=\textwidth]{assets/2dU1/loss_dQint_train_pt.svg}
+        \caption{\label{subfig:loss_dQint}Loss and $\delta Q$ during Training for 2D $U(1)$ model.}
+    \end{subfigure}
+    %
+    \hfill
+    %
+    \begin{subfigure}{0.30\textwidth}
         % \includesvg[width=\textwidth]{assets/logdet_ridgeplot2.svg}
         \includesvg[width=\textwidth]{assets/dQint_hist.svg}
         \caption{\label{subfig:dqhist}$\delta Q$ for trained model (blue) vs HMC (red).}
     \end{subfigure}
     %
     \hfill
-    \begin{subfigure}{0.40\textwidth}
+    \begin{subfigure}{0.31\textwidth}
         % \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
         \includesvg[width=\textwidth]{assets/2dU1/logdet_rp_eval_pt.svg}
         \caption{\label{subfig:logdet2dU1}$|\mathcal{J}|\, (\coloneqq\texttt{logdet})$ vs LF step.}
@@ -410,7 +418,7 @@ topological charge between sequential configurations (the \emph{tunneling rate})
     %
     \hfill
     %
-    \begin{subfigure}{0.33\textwidth}
+    \begin{subfigure}{0.31\textwidth}
         % \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
         \includesvg[width=\textwidth]{assets/2dU1/energy_rp_eval_pt.svg}
         \caption{\label{subfig:energy2dU1}Energy $(\coloneqq H)$ vs LF step}
@@ -418,7 +426,7 @@ topological charge between sequential configurations (the \emph{tunneling rate})
     %
     \hfill
     %
-    \begin{subfigure}{0.33\textwidth}
+    \begin{subfigure}{0.31\textwidth}
         % \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
         \includesvg[width=\textwidth]{assets/2dU1/energy_rp_hmc_pt.svg}
         \caption{\label{subfig:logdet2dU1}$|\mathcal{J}|\, (\coloneqq\texttt{logdet})$ vs LF step.}
