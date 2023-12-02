@@ -155,7 +155,8 @@ Fermi National Accelerator Laboratory\\}
 
 \tableofcontents
 
-\section{\label{sec:background}Introduction}
+\section{Introduction}
+\label{sec:background}
 
 We would like to calculate observables $\mathcal{O}$:
 %
@@ -167,6 +168,7 @@ where $\pi(x) \propto e^{-\beta S(x)}$ is our target distribution.
 
 %
 If these were independent, we could approximate the integral as
+%
 $\left\langle\mathcal{O}\right\rangle \simeq \frac{1}{N}\sum_{n=1}^{N}
 \mathcal{O}(x_{n})$ with variance
 %
@@ -182,7 +184,8 @@ $\tau_{\mathrm{int}}^{\mathcal{O}}$ in the variance expression
 \end{equation}
 
 
-\subsection{\label{subsec:hmc}Hamiltonian Monte Carlo (HMC)}
+\subsection{Hamiltonian Monte Carlo (HMC)}
+\label{subsec:hmc}
 %
 The typical approach~\cite{foreman_deep_2021,foreman_leapfroglayers_2022} is to use 
 %
@@ -190,20 +193,21 @@ Hamiltonian Monte Carlo (HMC) algorithm for generating configurations
 %
 distributed according to our target distribution $\pi(x)$.
 %
-This can be done by sequentially constructing a chain of states:
+This can be done by sequentially constructing a chain of states $\{x_{0},\, x_{1},\, x_{2},\, \ldots,\, x_{i},\, \ldots,\, x_{n}\}$, such that, as $n \rightarrow \infty$:
+%$\left[x_{0}\right]\rightarrow x_{1} \rightarrow x_{2} 
+% \rightarrow x_{i} \rightarrow \cdots \rightarrow  \left[x_{n}\right]$
 %
-%\begin{wrapfigure}[21]{l}{0.40\textwidth}
-%  \begin{center}
-%  \includegraphics[width=\linewidth]{assets/hmc-update11.pdf}
-%  \caption{\label{fig:hmc-update}Leapfrog update.}
-%  \end{center}
-%\end{wrapfigure}
 %
-\begin{equation}
-x_{0} \rightarrow x_{1} \rightarrow x_{i} \rightarrow \cdots \rightarrow x_{n}
-\end{equation}
+\begin{wrapfigure}[18]{l}{0.40\textwidth}
+  \begin{center}
+  \caption{\label{fig:hmc-update}Leapfrog update.}
+  \includegraphics[width=\linewidth]{assets/hmc-update11.pdf}
+  \end{center}
+\end{wrapfigure}
 %
-such that, as $n \rightarrow \infty$:
+%\begin{equation}
+%x_{0} \rightarrow x_{1} \rightarrow x_{i} \rightarrow \cdots \rightarrow x_{n}
+%\end{equation}
 %
 \begin{equation}
 \left\{x_{i}, x_{i+1}, x_{i+2}, \ldots, x_{n}\right\} \sim \pi(x).
@@ -234,6 +238,7 @@ v' &\coloneqq \Lambda(x', \tilde{v}) = \tilde{v} - \frac{\varepsilon}{2} F(x'),
 %
 where we've written the force term as $F(x) = \partial_{x}S(x)$.
 %
+
 Typically, we build a trajectory of $N_{\mathrm{LF}}$ leapfrog steps
 %
 \begin{equation}
@@ -249,7 +254,8 @@ criteria~\cite{robert_metropolis-hastings_2016}
 A(x'|x) = \mathrm{min}\left\{{1, \frac{\pi(x')}{\pi(x)} \left| \frac{\partial x'}{\partial x} \right|}\right\}.
 \end{equation}
 %
-\section{\label{sec:method}Method}
+\section{Method}
+\label{sec:method}
 %
 \begin{wrapfigure}[19]{r}{0.42\textwidth}
     \begin{center}
@@ -278,7 +284,7 @@ These network outputs $(\alpha, \beta, \gamma)$ are then used in a generalized M
 shown in Fig~\ref{fig:lf-layer}) via:
 %
 \begin{align}
-\Aoutlineboxed[myPink]{\Gamma^{\pm}_{\theta}&}: (x, v) \rightarrow (x, v') \\
+\Aoutlineboxed[myPink]{\Gamma^{\pm}_{\theta}&}: (x, v) \rightarrow (x, v'), \\
 \Aoutlineboxed[myOrange]{\Lambda^{\pm}_{\theta}&}: (x, v) \rightarrow (x', v).
 \end{align}
 %
@@ -350,15 +356,6 @@ into two sub-updates on complementary subsets ($x = x_{A} \cup x_{B}$):
   \includegraphics[width=\linewidth]{assets/csd1}
   \end{center}
 \end{wrapfigure}
-%
-%\begin{wrapfigure}[11]{r}{0.55\textwidth}
-%  \begin{center}
-%    \caption{\label{fig:lattice}Illustration of the lattice\fix{cut to free up space}.}
-%    \includegraphics[width=0.54\textwidth]{assets/lattice-horizontal1.pdf}
-%  \end{center}
-%  \label{fig:lattice}
-%\end{wrapfigure}
-%
 \subsection{\label{subsec:2dU1}2D \texorpdfstring{$U(1)$}{U(1)} Model}
 %
 We build upon the approach originally introduced in~\cite{levy_generalizing_2018}, which was successfully applied to the 2D $U(1)$ lattice gauge model in~\cite{foreman_learning_2019,foreman_deep_2021,foreman_leapfroglayers_2022}.
@@ -394,13 +391,13 @@ topological charge between sequential configurations (the \emph{tunneling rate})
 % quantities over increasingly many lattice configurations, we are able 
 %
 %\subsection{\label{subsec:2dU1-appendix}2D \texorpdfstring{$U(1)$}{U(1)} Results}
-%
-\begin{figure}[h]
+
+\begin{figure}[htpb!]
     \centering
     \begin{subfigure}{0.4\textwidth}
         % \includesvg[width=\textwidth]{assets/logdet_ridgeplot1.svg}
         \includesvg[width=\textwidth]{assets/logdet.svg}
-        \caption{\label{subfig:logdet2dU1}$|\mathcal{J}|$ vs LF step.}
+        \caption{\label{subfig:logdet2dU1}$|\mathcal{J}|\, (\coloneqq\texttt{logdet})$ vs LF step.}
     \end{subfigure}
     %
     \hfill
@@ -413,8 +410,16 @@ topological charge between sequential configurations (the \emph{tunneling rate})
     %
     \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model at $\beta = 4$ showing increasing $|\mathcal{J}|$ towards the middle of the trajectory (left), resulting in improved tunneling rate ($\delta Q$) (right).}
 \end{figure}
-%
+
 \subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
+%
+%\begin{wrapfigure}[9]{r}{0.45\textwidth}
+%  \begin{center}
+%    \caption{Illustration of the lattice.}
+%    \includegraphics[width=0.5\textwidth]{assets/lattice-horizontal1.pdf}
+%  \end{center}
+%  \label{fig:lattice}
+%\end{wrapfigure}
 %
 We would like to generalize this approach to handle 4D $SU(3)$ link variables $U_{\mu}(n) \in SU(3)$:
 %
