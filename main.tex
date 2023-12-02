@@ -405,7 +405,7 @@ topological charge between sequential configurations (the \emph{tunneling rate})
     \hfill
     %
     \begin{subfigure}{0.55\textwidth}
-        \includesvg[width=\textwidth]{assets/2dU1/loss_dQint_train_pt1.svg}
+        \includesvg[width=\textwidth]{assets/2dU1/loss_dQint_train_pt2.svg}
         \caption{\label{subfig:loss_dQint}Loss (blue) and $\delta Q$ (red) during training}
     \end{subfigure}
     %
@@ -427,7 +427,7 @@ topological charge between sequential configurations (the \emph{tunneling rate})
     %
     \begin{subfigure}{0.31\textwidth}
         \includesvg[width=\textwidth]{assets/2dU1/energy_rp_hmc_pt.svg}
-        \caption{\label{subfig:logdet2dU1}$H$ vs LF step \emph{(HMC)}}
+        \caption{\label{subfig:energy2dU1hmc}$H$ vs LF step \emph{(HMC)}}
     \end{subfigure}
     %
     \hfill
@@ -437,7 +437,7 @@ topological charge between sequential configurations (the \emph{tunneling rate})
     %    \caption{\label{subfig:dqhist}$\delta Q$ for trained model (blue) vs HMC (red).}
     %\end{subfigure}
     %
-    \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model at $\beta = 4$ showing increasing $|\mathcal{J}|$ towards the middle of the trajectory (left), resulting in improved tunneling rate ($\delta Q$) (right).}
+    \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model at $\beta = 4$ showing increasing energy~\ref{subfig:energy2dU1} ($|\mathcal{J}|$~\ref{subfig:logdet2dU1}) towards the middle of the trajectory, resulting in improved tunneling rate ($\delta Q$)~\ref{subfig:dqhist}\footnote{Note that the density plots in Fig~\ref{subfig:logdet2dU1},~\ref{subfig:energy2dU1},~\ref{subfig:energy2dU1hmc} are colored according to numeric value}.}
 \end{figure}
 
 \subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
