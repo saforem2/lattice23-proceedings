@@ -165,7 +165,6 @@ We would like to calculate observables $\mathcal{O}$:
 \end{equation}
 %
 where $\pi(x) \propto e^{-\beta S(x)}$ is our target distribution.
-
 %
 If these were independent, we could approximate the integral as
 %
@@ -198,7 +197,7 @@ This can be done by sequentially constructing a chain of states $\{x_{0},\, x_{1
 % \rightarrow x_{i} \rightarrow \cdots \rightarrow  \left[x_{n}\right]$
 %
 %
-\begin{wrapfigure}[18]{l}{0.40\textwidth}
+\begin{wrapfigure}[17]{l}{0.37\textwidth}
   \begin{center}
   \caption{\label{fig:hmc-update}Leapfrog update.}
   \includegraphics[width=\linewidth]{assets/hmc-update11.pdf}
@@ -238,14 +237,11 @@ v' &\coloneqq \Lambda(x', \tilde{v}) = \tilde{v} - \frac{\varepsilon}{2} F(x'),
 %
 where we've written the force term as $F(x) = \partial_{x}S(x)$.
 %
-
-Typically, we build a trajectory of $N_{\mathrm{LF}}$ leapfrog steps
+Typically, we build a trajectory of $N_{\mathrm{LF}}$ leapfrog steps $(x_{0}, v_{0}) \rightarrow (x_{1}, v_{1}) \rightarrow \cdots \rightarrow (x', v'),$ and propose $x'$ as the next state in our chain.
 %
-\begin{equation}
-(x_{0}, v_{0}) \rightarrow (x_{1}, v_{1}) \rightarrow \cdots \rightarrow (x', v'),
-\end{equation}
-%
-and propose $x'$ as the next state in our chain.
+%\begin{equation}
+%(x_{0}, v_{0}) \rightarrow (x_{1}, v_{1}) \rightarrow \cdots \rightarrow (x', v'),
+%\end{equation}
 %
 This proposal state is then accepted according to the Metropolis-Hastings
 criteria~\cite{robert_metropolis-hastings_2016}
@@ -405,35 +401,35 @@ Results\footnote{\href{https://github.com/saforem2/l2hmc-qcd/blob/main/src/l2hmc
     \hfill
     %
     \begin{subfigure}{0.4\textwidth}
-        \includesvg[width=\textwidth]{assets/2dU1/dQint_hist3.svg}
-        \caption{\label{subfig:dqhist}$\delta Q$ for trained model (blue) vs HMC (red).}
+        \includesvg[width=\textwidth]{assets/2dU1-1/dQint_hist.svg}
+        \caption{\label{subfig:dqhist}$\delta Q$ for trained model (red) vs HMC (blue).}
     \end{subfigure}
     %
     \hfill
     %
     \begin{subfigure}{0.55\textwidth}
-        \includesvg[width=\textwidth]{assets/2dU1/loss_dQint_train_pt4.svg}
+        \includesvg[width=\textwidth]{assets/2dU1-1/loss_dQint_train_pt.svg}
         \caption{\label{subfig:loss_dQint}Loss (blue) and $\delta Q$ (red) during training}
     \end{subfigure}
     %
     \hfill
     %
-    \begin{subfigure}{0.31\textwidth}
-        \includesvg[width=\textwidth]{assets/2dU1/logdet_rp_eval_pt.svg}
+    \begin{subfigure}{0.30\textwidth}
+        \includesvg[width=\textwidth]{assets/2dU1-1/logdet_rp_eval_pt.svg}
         \caption{\label{subfig:logdet2dU1}$|\mathcal{J}|$ vs LF step \emph{(trained)}}
     \end{subfigure}
     %
     \hfill
     %
-    \begin{subfigure}{0.31\textwidth}
-        \includesvg[width=\textwidth]{assets/2dU1/energy_rp_eval_pt.svg}
+    \begin{subfigure}{0.30\textwidth}
+        \includesvg[width=\textwidth]{assets/2dU1-1/energy_rp_eval_pt.svg}
         \caption{\label{subfig:energy2dU1}$H$ vs LF step \emph{(trained)}}
     \end{subfigure}
     %
     \hfill
     %
-    \begin{subfigure}{0.31\textwidth}
-        \includesvg[width=\textwidth]{assets/2dU1/energy_rp_hmc_pt.svg}
+    \begin{subfigure}{0.30\textwidth}
+        \includesvg[width=\textwidth]{assets/2dU1-1/energy_rp_hmc_pt.svg}
         \caption{\label{subfig:energy2dU1hmc}$H$ vs LF step \emph{(HMC)}}
     \end{subfigure}
     %
@@ -444,9 +440,9 @@ Results\footnote{\href{https://github.com/saforem2/l2hmc-qcd/blob/main/src/l2hmc
     %    \caption{\label{subfig:dqhist}$\delta Q$ for trained model (blue) vs HMC (red).}
     %\end{subfigure}
     %
-    \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model at $\beta = 4$. In~\ref{subfig:energy2dU1} we see the energy $H$ increasing towards the middle of the trajectory, resulting in improved tunneling rate ($\delta Q$)~\ref{subfig:dqhist}.}
+    \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model at $\beta = 4$. In~\ref{subfig:energy2dU1} we see the energy $H$ increasing towards the middle of the trajectory, resulting in improved tunneling rate (larger $\delta Q$) as seen in~\ref{subfig:dqhist}.}
 \end{figure}
-
+%
 \subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
 %
 %\begin{wrapfigure}[9]{r}{0.45\textwidth}
@@ -474,7 +470,7 @@ S_{G} &= -\frac{\beta}{6}\sum \mathrm{Tr}\left[U_{\mu\nu}(n) + U^{\dagger}_{\mu\
 U_{\mu\nu}(n) &= U_{\mu}(n) U_{\nu}(n + \hat{\mu}) U_{\mu}^{\dagger}(n + \hat{\nu}) U^{\dagger}_{\nu}(n).
 \end{align}
 %
-\subsection{\label{subsec:hmc-4dSU3}Generic MD Updates}
+\subsubsection{\label{subsubsec:hmc-4dSU3}Generic MD Updates}
 %
 As before, we introduce momenta $P_{\mu}(n) = P^{k}_{\mu}(n) \lambda^{k}$
 conjugate to the real fields $\omega_{\mu}^{k}(n)$.
@@ -494,13 +490,14 @@ We can write the Hamiltonian as
 %\quad \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}.
 %\end{equation}
 %
-To update the gauge field $U_{\mu} = e^{i\omega_{\mu}^{k} \lambda^{k}}$, write
+To update the gauge field $U_{\mu} = e^{i\omega_{\mu}^{k} \lambda^{k}}$, write $\Aoutlineboxed[myGreen]{\frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k}}$ and discretize with step size $\varepsilon$:
 %
-\begin{equation}
-    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} %\Longrightarrow Aoutlineboxed[myGreen]{\frac{dW}{dt} = P}.
-\end{equation}
+%\begin{equation}
+%    %\Aoutlineboxed[myGreen]{\frac{d\omega^{k}}{dt} = \frac{\partial H}{\partial P^{k}}} \Longrightarrow 
+%    \frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k} %\Longrightarrow Aoutlineboxed[myGreen]{\frac{dW}{dt} = P}.
+%\end{equation}
 %
-Discretizing with step size $\varepsilon$,
+%Discretizing with step size $\varepsilon$,
 %
 \begin{align}
     %W(\varepsilon) &= W(0) + \varepsilon P(0) \Longrightarrow \\
@@ -509,10 +506,10 @@ Discretizing with step size $\varepsilon$,
     \Aoutlineboxed[myOrange]{\Lambda: U \rightarrow U' &= e^{i \varepsilon P} U}.
 \end{align}
 %
-Similarly for the momentum update,
+Similarly for the momentum update $\Aoutlineboxed[lfPurple]{\frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}}$,
 %
 \begin{align}
-    \Aoutlineboxed[lfPurple]{\frac{dP^{k}}{dt} &= - \frac{\partial H}{\partial \omega^{k}}} \\
+    %\Aoutlineboxed[lfPurple]{\frac{dP^{k}}{dt} &= - \frac{\partial H}{\partial \omega^{k}}} \\
     %= - \frac{\partial H}{\partial W} = - \frac{dS}{dW} \Longrightarrow \\
     P(\varepsilon) &= P(0) - \varepsilon F[U]\\
     %P(0) - \varepsilon \left.\frac{dS}{dW}\right|_{t=0}  = 
@@ -532,7 +529,7 @@ where $F[U]$ is the force term (see~\ref{subsec:force_term}).
 %    \item{Gauge link update: $\Lambda: U \rightarrow e^{i\varepsilon P}U$}
 %\end{enumerate}
 %
-\subsection{\label{subsec:generalized-md-4dSU3}Generalized MD Update}
+\subsubsection{\label{subsubsec:generalized-md-4dSU3}Generalized MD Update}
 As in Sec.\ref{sec:method}, we introduce \texttt{pNet}: $(U, F) \rightarrow \left(\alpha_{P}, \beta_{P},
 %
 \gamma_{P}\right)$ and \texttt{uNet}: $(U, P) \rightarrow \left(\,\cdot\,, \beta_{U}, \gamma_{U}\right)$\footnote{Note that we have omitted the $U$ scaling term ($\alpha_{U}$) term in this update since $U \in SU(3)$}.
@@ -555,7 +552,8 @@ we can write the complete update:
 \end{align}
 %
 
-\subsection{\label{sec:momentum-update}Momentum Update}
+%\subsub{\label{sec:momentum-update}Momentum Update}
+\textbf{Momentum Update}\\
 %
 In this case, our $\texttt{pNet}: (U, F) = (\alpha_{P},
 \beta_{P}, \gamma_{P})$.
@@ -585,9 +583,10 @@ By introducing the above modifications, we incur a factor of
 %
 $\log\left|\frac{\partial P^{\pm}}{\partial P}\right| = \, \pm \, \frac{\varepsilon}{2}\sum \alpha_{P}$
 %
-in the Metropolis Hastings accept / reject $A(U'|U)$, and the sum is taken over the full trajectory.
+in the Metropolis Hastings accept / reject $A(U'|U)$, and the sum is taken over the full trajectory.\\
 %
-\subsection{\label{subsec:gauge-update}Link Update}
+%\subsection{\label{subsec:gauge-update}Link Update}
+\textbf{Link Update}\\
 %
 Similarly to the momentum update, the outputs from our 
 %
@@ -630,7 +629,7 @@ difference
 where $\delta^{2}_{Q}(U, U')= |Q' - Q|^{2}$ is the squared topological
 charge (see~\ref{subsec:topological_charge}) difference between the initial and proposal configurations.
 
-\section{\label{sec:results}Results}
+\subsection{\label{sec:results}Results}
 %
 For the trained 2D $U(1)$ model (Fig~\ref{fig:2dU1}), we see in Fig~\ref{subfig:logdet2dU1} that 
 %
@@ -669,7 +668,7 @@ Identical behavior is observed after a short training run for the 4D $SU(3)$ mod
 
 \section{\label{sec:conclusion}Conclusion}
 %
-In this work we've introduced a generalized MD update for generating 4D SU(3) gauge configurations that can be trained to improve sampling efficiency.
+In this work we've introduced a generalized MD update for generating 4D $SU(3)$ gauge configurations that can be trained to improve sampling efficiency.
 %
 Note that this is a relatively simple proof of concept demonstrating how to construct such a sampler.
 %
