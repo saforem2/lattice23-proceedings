@@ -145,6 +145,8 @@ configurations, and discuss ongoing work in this direction.
 %
 In particular, we consider the problem of sampling configurations from a 4D $SU(3)$ lattice gauge theory, and consider a generalized leapfrog integrator in the molecular dynamics update that can be trained to improve sampling efficiency.
 %
+Code is available online at \href{https://github.com/saforem2/l2hmc-qcd}{\faGithub \texttt{l2hmc-qcd}}.
+%
 }
 
 \FullConference{The 40th International Symposium on Lattice Field Theory (Lattice 2023)\\
@@ -288,22 +290,18 @@ shown in Fig~\ref{fig:lf-layer}) via:
 \end{align}
 %
 where the superscript $\pm$ on $\Gamma^{\pm}_{\theta}$, $\Lambda^{\pm}_{\theta}$
-correspond to the direction $d \sim \mathcal{U}(-1, +1)$ of the update.
+correspond to the direction $d \sim \mathcal{U}(-1, +1)$ of the update.%\footnote{We can simplify this slightly by absorbing the directional (forward / backward) random variable and explicitly constructing trajectories consisting of $n$ \textit{forward} $(+)$ steps followed by $n$ \emph{backward} $(-)$ steps.}
 %
-% We can simplify this and \textit{absorb} the directional
-% (forward / backward) random variable by explicitly constructing trajectories
-% consisting of $n$ \textit{forward} $(+)$ steps followed by $n$ \emph{backward}
-% $(-)$ steps. See \textcolor{red}{Appendix XXX for details.}
+%See \textcolor{red}{Appendix XXX for details.}
 
 %
-To ensure that our proposed update remains reversible, we split the $x$ update
-into two sub-updates on complementary subsets ($x = x_{A} \cup x_{B}$):
+To ensure that our proposed update remains reversible, we split the $x$ update into two sub-updates on complementary subsets ($x = x_{A} \cup x_{B}$):
 %
 \begin{align}
-    {v'} &= {\Gamma_{\theta}(x, v)} \\
-    {x'} &= x_{B} + {\Lambda_{\theta}(x_{A}, v')} \\
-    {x''} &= x'_{A} + {\Lambda_{\theta}(x'_{B}, v')} \\
-    {v''} &= {\Gamma_{\theta}(x'', v')}
+    {v'} &= {\Gamma^{\pm}_{\theta}(x, v)} \\
+    {x'} &= x_{B} + {\Lambda^{\pm}_{\theta}(x_{A}, v')} \\
+    {x''} &= x'_{A} + {\Lambda^{\pm}_{\theta}(x'_{B}, v')} \\
+    {v''} &= {\Gamma^{\pm}_{\theta}(x'', v')}
 \end{align}
 %
 %where $v_{0} \sim \mathcal{N}(0, 1)$ is re-sampled at the beginning of each trajectory and projected away at the end to obtain the proposal state $x'$.
@@ -394,8 +392,9 @@ topological charge between sequential configurations (the \emph{tunneling rate})
 
 \subsubsection{\label{subsubsec:2dResults}Results}
 %
+Results for the 2D $U(1)$ model trained at $\beta = 4$ in $\simeq 25$ minutes on a single NVIDIA A100 GPU, using \href{https://github.com/saforem2/l2hmc-qcd}{\faGithubAlt \texttt{l2hmc-qcd}}.
+%
 %Results\footnote{\href{https://github.com/saforem2/l2hmc-qcd/blob/main/src/l2hmc/notebooks/l2hmc-2dU1.ipynb}{Link to Jupyter notebook}} 
-Results for the 2D $U(1)$ model trained at $\beta = 4$ in $\simeq 23$ minutes on a single NVIDIA A100 GPU, using \href{https://github.com/saforem2/l2hmc-qcd}{\faGithub  $\.$ \texttt{saforem2/l2hmc-qcd}}.
 %
 %Note that the density plots in Fig~\ref{subfig:logdet2dU1},~\ref{subfig:energy2dU1},~\ref{subfig:energy2dU1hmc} are colored according to numeric value.
 %
@@ -444,7 +443,7 @@ Results for the 2D $U(1)$ model trained at $\beta = 4$ in $\simeq 23$ minutes on
     %    \caption{\label{subfig:dqhist}$\delta Q$ for trained model (blue) vs HMC (red).}
     %\end{subfigure}
     %
-    \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model at $\beta = 4$. In~\ref{subfig:energy2dU1} we see the energy $H$ increasing towards the middle of the trajectory, resulting in improved tunneling rate (larger $\delta Q$) in ~\ref{subfig:dqhist}. \href{https://github.com/saforem2/l2hmc-qcd/blob/main/src/l2hmc/notebooks/l2hmc-2dU1.ipynb}{\twemoji{blue book} Jupyter notebook}.}
+    \caption{\label{fig:2dU1}Results from trained 2D $U(1)$ model at $\beta = 4$. In~\ref{subfig:energy2dU1} we see the energy $H$ increasing towards the middle of the trajectory, resulting in improved tunneling rate (larger $\delta Q$) in ~\ref{subfig:dqhist}. \href{https://saforem2.github.io/l2hmc-qcd/qmd/l2hmc-2dU1/l2hmc-2dU1.html}{\twemoji{blue book} Jupyter notebook}.}
 \end{figure}
 %
 \subsection{\label{subsec:4dSU3}4D \texorpdfstring{$SU(3)$}{SU(3)} Model}
@@ -536,9 +535,8 @@ where $F[U]$ is the force term (see~\ref{subsec:force_term}).
 \subsubsection{\label{subsubsec:generalized-md-4dSU3}Generalized MD Update}
 As in Sec.\ref{sec:method}, we introduce \texttt{pNet}: $(U, F) \rightarrow \left(\alpha_{P}, \beta_{P},
 %
-\gamma_{P}\right)$ and \texttt{uNet}: $(U, P) \rightarrow \left(\,\cdot\,, \beta_{U}, \gamma_{U}\right)$\footnote{Note that we have omitted the $U$ scaling term ($\alpha_{U}$) term in this update since $U \in SU(3)$}.
+\gamma_{P}\right)$ and \texttt{uNet}: $(U, P) \rightarrow \left(\,\cdot\,, \beta_{U}, \gamma_{U}\right)$. Note that we have omitted the $U$ scaling term ($\alpha_{U}$) term in this update since $U \in SU(3)$.
 %
-
 In terms of the generalized update operators,
 %
 \begin{align}
@@ -784,7 +782,5 @@ $P_{\mu\nu}(x)$, and can be written as
 %
 this has the advantage of being computationally inexpensive, but leads
 to lattice artifacts of order $\mathcal{O}(a^{2})$.
-
-
 
 \end{document}
