@@ -592,7 +592,7 @@ Similarly to the momentum update, the outputs from our
 %
 $\texttt{uNet}: (U, P) \rightarrow \left(\, \cdot\,, \beta_{U}, \gamma_{U}\right)$
 %
-are used in the generalized link update $U^{\pm} \coloneqq \Lambda^{\pm}(U, P) = e^{i\varepsilon \tilde{P}^{\pm}} U$
+are used in the generalized link update $U^{\pm} \coloneqq \Lambda_{\theta}^{\pm}(U, P) = e^{i\varepsilon \tilde{P}^{\pm}} U$
 %$\Lambda^{\pm}_{\theta}: (U, P) \rightarrow U^{\pm}$
 %
 %\begin{equation}
@@ -606,7 +606,7 @@ Explicitly:
 \begin{enumerate}
 \item \texttt{forward}, $(+)$:
     \begin{equation}
-        U^{+} \coloneqq \Lambda^{+}_{\theta}(U, P) = e^{i\varepsilon \tilde{P}^{+}} U, \quad \text{with}\quad \tilde{P}^{+} = \left[P\odot e^{\varepsilon \beta_{U}} + \gamma_{U}\right]
+        U^{+} \coloneqq \Lambda^{+}_{\theta}(U, P) = e^{i\varepsilon \tilde{P}^{+}} U, \quad \text{with}\quad \tilde{P}^{+} = \left[P\cdot e^{\varepsilon \beta_{U}} + \gamma_{U}\right]
     \end{equation}
 %
 \item \texttt{backward}, $(-)$:
