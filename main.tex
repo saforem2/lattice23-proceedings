@@ -86,6 +86,18 @@
   \fcolorbox{#1}{#1}{\m@th$\displaystyle#2#3$}%
 } 
 
+\newcommand*\Aoutlinebox[2][red]{%
+   \let\bgroup{\romannumeral-`}%
+   \@Aoutlineboxed{#1}#2&&\ENDDNE
+}
+\def\@Aoutlinebox#1#2&#3&#4\ENDDNE{%
+  \ifnum0=`{}\fi
+  \setbox\z@\hbox{$\displaystyle#2{}\m@th$\kern\fboxsep \kern\fboxrule}%
+  \edef\@tempa{\kern\wd\z@ \kern-\the\wd\z@ \fboxsep\the\fboxsep \fboxrule\the\fboxrule}%
+  \@tempa
+  \fcolorbox{#1}{white}{\m@th$\displaystyle#2#3$}%
+} 
+
 \newcommand*\Aoutlineboxed[2][red]{%
    \let\bgroup{\romannumeral-`}%
    \@Aoutlineboxed{#1}#2&&\ENDDNE
@@ -93,7 +105,7 @@
 \def\@Aoutlineboxed#1#2&#3&#4\ENDDNE{%
   \ifnum0=`{}\fi
   \setbox\z@\hbox{$\displaystyle#2{}\m@th$\kern\fboxsep \kern\fboxrule}%
-  \edef\@tempa{\kern\wd\z@ \kern-\the\wd\z@ \fboxsep\the\fboxsep \fboxrule\the\fboxrule}%
+  \edef\@tempa{\kern\wd\z@ & \kern-\the\wd\z@ \fboxsep\the\fboxsep \fboxrule\the\fboxrule}%
   \@tempa
   \fcolorbox{#1}{white}{\m@th$\displaystyle#2#3$}%
 } 
@@ -480,8 +492,8 @@ We can write the Hamiltonian as
 %
 \begin{equation}
     H[P, U] = \frac{1}{2} P^{2} + S_{G}[U] \Longrightarrow
-    \Aoutlineboxed[myGreen]{\frac{d\omega^{k}}{dt} = \frac{\partial H}{\partial P^{k}}},
-    \quad \Aoutlineboxed[lfPurple]{\frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}}.
+    \Aoutlinebox[myGreen]{\frac{d\omega^{k}}{dt} = \frac{\partial H}{\partial P^{k}}},
+    \quad \Aoutlinebox[lfPurple]{\frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}}.
 \end{equation}
 %
 %By Hamilton's equations
@@ -491,7 +503,7 @@ We can write the Hamiltonian as
 %\quad \frac{dP^{k}}{dt} = - \frac{\partial H}{\partial \omega^{k}}.
 %\end{equation}
 %
-To update the gauge field $U_{\mu} = e^{i\omega_{\mu}^{k} \lambda^{k}}$, write $\Aoutlineboxed[myGreen]{\frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k}}$ and discretize with step size $\varepsilon$:
+To update the gauge field $U_{\mu} = e^{i\omega_{\mu}^{k} \lambda^{k}}$, write $\Aoutlinebox[myGreen]{\frac{d\omega^{k}}{dt}\lambda^{k} = P^{k} \lambda^{k}}$ and discretize with step size $\varepsilon$:
 %
 %\begin{equation}
 %    %\Aoutlineboxed[myGreen]{\frac{d\omega^{k}}{dt} = \frac{\partial H}{\partial P^{k}}} \Longrightarrow 
@@ -538,8 +550,8 @@ As in Sec.\ref{sec:method}, we introduce \texttt{pNet}: $(U, F) \rightarrow \lef
 In terms of the generalized update operators,
 %
 \begin{align}
-    \Aoutlineboxed[myPink]{\Gamma^{\pm}_{\theta}}&: (U, P) \xrightarrow[]{\left(\alpha_{P}, \beta_{P}, \gamma_{P}\right)} (U, P') \\
-    \Aoutlineboxed[myOrange]{\Lambda^{\pm}_{\theta}}&: (U, P)\xrightarrow[]{\left(\, \cdot ,\, \beta_{U}, \gamma_{U}\right)} (U', P)
+    \Aoutlineboxed[myPink]{\Gamma^{\pm}_{\theta}&}: (U, P) \xrightarrow[]{\left(\alpha_{P}, \beta_{P}, \gamma_{P}\right)} (U, P') \\
+    \Aoutlineboxed[myOrange]{\Lambda^{\pm}_{\theta}&}: (U, P)\xrightarrow[]{\left(\, \cdot ,\, \beta_{U}, \gamma_{U}\right)} (U', P)
 \end{align}
 %
 we can write the complete update:
